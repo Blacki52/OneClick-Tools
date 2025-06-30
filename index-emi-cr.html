@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Loan EMI Calculator</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Arial', sans-serif;
+      background: linear-gradient(135deg, #fce4ec, #f3e5f5);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 100%;
+    }
+
+    .calculator {
+      background: white;
+      padding: 30px;
+      border-radius: 16px;
+      box-shadow: 0 10px 30px rgba(156, 39, 176, 0.2);
+      width: 100%;
+      max-width: 500px;
+      text-align: center;
+      border: 1px solid #f8bbd0;
+    }
+
+    h2 {
+      color: #9c27b0;
+      margin-bottom: 25px;
+      font-size: 28px;
+      text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+    }
+
+    label {
+      display: block;
+      margin: 15px 0 8px;
+      font-size: 15px;
+      color: #7b1fa2;
+      font-weight: 500;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 12px 15px;
+      margin: 8px 0;
+      border: 2px solid #e1bee7;
+      border-radius: 10px;
+      font-size: 16px;
+      transition: all 0.3s;
+      background-color: #fafafa;
+    }
+
+    input:focus, select:focus {
+      border-color: #ba68c8;
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(186, 104, 200, 0.2);
+      background-color: white;
+    }
+
+    button {
+      width: 100%;
+      padding: 14px;
+      margin: 20px 0 10px;
+      border: none;
+      border-radius: 10px;
+      font-size: 17px;
+      font-weight: 600;
+      background: linear-gradient(135deg, #ba68c8, #9c27b0);
+      color: white;
+      cursor: pointer;
+      transition: all 0.3s;
+      box-shadow: 0 4px 10px rgba(156, 39, 176, 0.3);
+    }
+
+    button:hover {
+      background: linear-gradient(135deg, #9c27b0, #7b1fa2);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 15px rgba(156, 39, 176, 0.4);
+    }
+
+    button:active {
+      transform: translateY(0);
+    }
+
+    #results {
+      background-color: #f3e5f5;
+      padding: 20px;
+      border-radius: 10px;
+      margin-top: 20px;
+      border: 1px dashed #ba68c8;
+    }
+
+    #results p {
+      font-size: 18px;
+      color: #4a148c;
+      margin: 12px 0;
+    }
+
+    #emiAmount, #totalInterest, #totalPayment {
+      font-weight: bold;
+      color: #9c27b0;
+      font-size: 20px;
+    }
+
+    @media (max-width: 480px) {
+      .calculator {
+        padding: 20px;
+        width: 95%;
+      }
+      
+      h2 {
+        font-size: 24px;
+      }
+      
+      button {
+        padding: 12px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="calculator">
+      <h2>Loan EMI Calculator</h2>
+      
+      <!-- Input fields for loan details -->
+      <label for="loanAmount">Loan Amount (₹):</label>
+      <input type="number" id="loanAmount" placeholder="Enter loan amount" required>
+      
+      <label for="interestRate">Interest Rate (%):</label>
+      <input type="number" id="interestRate" placeholder="Enter interest rate" required>
+      
+      <label for="loanTenure">Loan Tenure:</label>
+      <input type="number" id="loanTenure" placeholder="Enter loan tenure" required>
+
+      <label for="tenureType">Select Tenure Unit:</label>
+      <select id="tenureType">
+        <option value="months">Months</option>
+        <option value="years">Years</option>
+      </select>
+
+      <!-- Calculation Results -->
+      <div id="results">
+        <p>Monthly EMI: ₹<span id="emiAmount">0.00</span></p>
+        <p>Total Interest Payable: ₹<span id="totalInterest">0.00</span></p>
+        <p>Total Payment: ₹<span id="totalPayment">0.00</span></p>
+      </div>
+      
+      <button id="calculateBtn">Calculate EMI</button>
+    </div>
+  </div>
+
+  <script>
+    document.getElementById('calculateBtn').addEventListener('click', function() {
+      const loanAmount = parseFloat(document.getElementById('loanAmount').value);
+      const interestRate = parseFloat(document.getElementById('interestRate').value) / 100;
+      const loanTenure = parseInt(document.getElementById('loanTenure').value);
+      const tenureType = document.getElementById('tenureType').value;
+
+      // Validate inputs
+      if (isNaN(loanAmount) || isNaN(interestRate) || isNaN(loanTenure) || loanAmount <= 0 || interestRate <= 0 || loanTenure <= 0) {
+        alert('Please enter valid numbers for all fields.');
+        return;
+      }
+
+      // Convert tenure to months if in years
+      const tenureInMonths = tenureType === 'years' ? loanTenure * 12 : loanTenure;
+
+      // EMI calculation formula
+      const monthlyRate = interestRate / 12;
+      const emi = loanAmount * monthlyRate * Math.pow(1 + monthlyRate, tenureInMonths) / (Math.pow(1 + monthlyRate, tenureInMonths) - 1);
+      const totalPayment = emi * tenureInMonths;
+      const totalInterest = totalPayment - loanAmount;
+
+      // Update results
+      document.getElementById('emiAmount').textContent = emi.toFixed(2);
+      document.getElementById('totalInterest').textContent = totalInterest.toFixed(2);
+      document.getElementById('totalPayment').textContent = totalPayment.toFixed(2);
+    });
+  </script>
+</body>
+</html>
