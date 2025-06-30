@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Currency Converter</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: linear-gradient(135deg, #ff6b6b, #ff8e8e, #ffb3b3, #ffd8d8);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      background-size: 400% 400%;
+      animation: gradientBG 15s ease infinite;
+    }
+
+    @keyframes gradientBG {
+      0% {
+        background-position: 0% 50%;
+      }
+      50% {
+        background-position: 100% 50%;
+      }
+      100% {
+        background-position: 0% 50%;
+      }
+    }
+
+    .container {
+      background: rgba(255, 255, 255, 0.9);
+      padding: 30px;
+      border-radius: 16px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+      text-align: center;
+      width: 90%;
+      max-width: 450px;
+      backdrop-filter: blur(5px);
+    }
+
+    h1 {
+      color: #ff4757;
+      margin-bottom: 20px;
+      text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+    }
+
+    input, select {
+      width: 100%;
+      padding: 12px;
+      margin: 10px 0;
+      font-size: 16px;
+      border: 1px solid #ffccd5;
+      border-radius: 10px;
+      background-color: rgba(255, 255, 255, 0.8);
+      transition: all 0.3s;
+    }
+
+    input:focus, select:focus {
+      outline: none;
+      border-color: #ff6b6b;
+      box-shadow: 0 0 5px rgba(255, 107, 107, 0.5);
+    }
+
+    button {
+      background: linear-gradient(to right, #ff4757, #ff6b6b);
+      color: #fff;
+      padding: 14px 20px;
+      border: none;
+      font-size: 16px;
+      border-radius: 10px;
+      cursor: pointer;
+      width: 100%;
+      margin-top: 10px;
+      transition: all 0.3s;
+      font-weight: bold;
+      letter-spacing: 0.5px;
+    }
+
+    button:hover {
+      background: linear-gradient(to right, #ff6b6b, #ff4757);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(255, 107, 107, 0.3);
+    }
+
+    .result {
+      margin-top: 25px;
+      font-weight: bold;
+      font-size: 18px;
+      color: #ff4757;
+      padding: 15px;
+      background-color: rgba(255, 255, 255, 0.7);
+      border-radius: 10px;
+      border-left: 4px solid #ff4757;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h1>Currency Converter</h1>
+    <input type="number" id="amount" placeholder="Enter amount" />
+    
+    <select id="fromCurrency">
+      <option value="USD">USD - US Dollar</option>
+      <option value="INR">INR - Indian Rupee</option>
+      <option value="EUR">EUR - Euro</option>
+    </select>
+
+    <select id="toCurrency">
+      <option value="INR">INR - Indian Rupee</option>
+      <option value="USD">USD - US Dollar</option>
+      <option value="EUR">EUR - Euro</option>
+    </select>
+
+    <button onclick="convertCurrency()">Convert</button>
+
+    <div class="result" id="result"></div>
+  </div>
+
+  <script>
+    // Fixed exchange rates
+    const exchangeRates = {
+      USD: { USD: 1, INR: 83.2, EUR: 0.92 },
+      INR: { USD: 0.012, INR: 1, EUR: 0.011 },
+      EUR: { USD: 1.09, INR: 90.5, EUR: 1 }
+    };
+
+    function convertCurrency() {
+      const amount = parseFloat(document.getElementById("amount").value);
+      const from = document.getElementById("fromCurrency").value;
+      const to = document.getElementById("toCurrency").value;
+
+      if (!amount || amount <= 0) {
+        document.getElementById("result").textContent = "Please enter a valid amount.";
+        return;
+      }
+
+      const rate = exchangeRates[from][to];
+      const convertedAmount = (amount * rate).toFixed(2);
+
+      document.getElementById("result").textContent = 
+        `${amount} ${from} = ${convertedAmount} ${to}`;
+    }
+  </script>
+
+</body>
+</html>
