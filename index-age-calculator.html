@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>3D Age Calculator</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #00bfff, #ffffff);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .calculator {
+            background: #ffffffcc;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+            max-width: 350px;
+            width: 90%;
+            text-align: center;
+            transform: perspective(800px) rotateX(0deg) rotateY(0deg);
+            transition: transform 0.5s ease;
+        }
+
+        .calculator:hover {
+            transform: perspective(800px) rotateX(5deg) rotateY(5deg);
+        }
+
+        h1 {
+            color: #007acc;
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+        }
+
+        input[type="date"] {
+            padding: 10px;
+            font-size: 1rem;
+            border: 2px solid #00bfff;
+            border-radius: 10px;
+            width: 100%;
+            box-sizing: border-box;
+            margin-bottom: 20px;
+            outline: none;
+        }
+
+        .result {
+            font-size: 1.2rem;
+            color: #007acc;
+            margin-top: 15px;
+            min-height: 50px;
+            transition: opacity 0.3s ease;
+        }
+
+        @media (max-width: 500px) {
+            h1 {
+                font-size: 1.2rem;
+            }
+            .result {
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="calculator">
+        <h1>3D Age Calculator</h1>
+        <input type="date" id="birthdate" />
+        <div class="result" id="result">Enter your birthdate to see your age</div>
+    </div>
+
+    <script>
+        const birthdateInput = document.getElementById('birthdate');
+        const resultDiv = document.getElementById('result');
+
+        birthdateInput.addEventListener('input', () => {
+            const birthDate = new Date(birthdateInput.value);
+            if (birthdateInput.value === '') {
+                resultDiv.textContent = 'Enter your birthdate to see your age';
+                return;
+            }
+            const today = new Date();
+
+            let years = today.getFullYear() - birthDate.getFullYear();
+            let months = today.getMonth() - birthDate.getMonth();
+            let days = today.getDate() - birthDate.getDate();
+
+            if (days < 0) {
+                months--;
+                days += new Date(today.getFullYear(), today.getMonth(), 0).getDate();
+            }
+
+            if (months < 0) {
+                years--;
+                months += 12;
+            }
+
+            resultDiv.textContent = `You are ${years} year${years !== 1 ? 's' : ''}, ${months} month${months !== 1 ? 's' : ''}, and ${days} day${days !== 1 ? 's' : ''} old.`;
+        });
+    </script>
+</body>
+</html>
