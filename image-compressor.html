@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>3D Image Compressor</title>
+<style>
+  body {
+    font-family: 'Segoe UI', sans-serif;
+    background: linear-gradient(135deg, #00b4ff, #ffffff);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    margin: 0;
+    padding: 1rem;
+  }
+  .compressor-container {
+    background: white;
+    border-radius: 24px;
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+    padding: 24px;
+    max-width: 400px;
+    width: 90%;
+    text-align: center;
+    transition: transform 0.3s ease;
+  }
+  .compressor-container:hover {
+    transform: translateY(-5px);
+  }
+  h1 {
+    color: #00b4ff;
+    font-size: 1.6rem;
+    margin-bottom: 1rem;
+  }
+  input[type="file"] {
+    margin-bottom: 1rem;
+    padding: 0.5rem;
+    border: 2px dashed #00b4ff;
+    border-radius: 12px;
+    width: 100%;
+    cursor: pointer;
+    transition: background 0.3s;
+  }
+  input[type="file"]:hover {
+    background: #f0faff;
+  }
+  img {
+    max-width: 100%;
+    border-radius: 16px;
+    margin-bottom: 1rem;
+    box-shadow: 0 6px 14px rgba(0,0,0,0.12);
+    transition: transform 0.3s;
+  }
+  img:hover {
+    transform: scale(1.02);
+  }
+  button {
+    background: linear-gradient(135deg, #00b4ff, #0094cc);
+    color: white;
+    border: none;
+    padding: 0.6rem 1.2rem;
+    border-radius: 50px;
+    cursor: pointer;
+    font-size: 1rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    transition: background 0.3s, transform 0.2s;
+  }
+  button:hover {
+    background: linear-gradient(135deg, #0094cc, #007bb3);
+    transform: translateY(-2px);
+  }
+  @media (max-width: 500px) {
+    h1 {
+      font-size: 1.3rem;
+    }
+  }
+</style>
+</head>
+<body>
+  <div class="compressor-container">
+    <h1>3D Image Compressor</h1>
+    <input type="file" id="imageInput" accept="image/*" />
+    <img id="preview" src="" alt="Preview" style="display:none;" />
+    <button id="downloadBtn" style="display:none;">Download Compressed Image</button>
+  </div>
+
+  <script>
+    const imageInput = document.getElementById('imageInput');
+    const preview = document.getElementById('preview');
+    const downloadBtn = document.getElementById('downloadBtn');
+    let compressedBlob;
+
+    imageInput.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(event) {
+          preview.src = event.target.result;
+          preview.style.display = 'block';
+          compressImage(event.target.result);
+        }
+        reader.readAsDataURL(file);
+      }
+    });
+
+    function compressImage(dataUrl) {
+      const img = new Image();
+      img.src = dataUrl;
+      img.onload = function() {
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        const scale = 0.5; 
+        canvas.width = img.width * scale;
+        canvas.height = img.height * scale;
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+        canvas.toBlob((blob) => {
+          compressedBlob = blob;
+          downloadBtn.style.display = 'inline-block';
+        }, 'image/jpeg', 0.7);
+      }
+    }
+
+    downloadBtn.addEventListener('click', () => {
+      const url = URL.createObjectURL(compressedBlob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'compressed_image.jpg';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    });
+  </script>
+</body>
+</html>
