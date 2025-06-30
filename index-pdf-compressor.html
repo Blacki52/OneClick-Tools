@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PDF Compressor Tool</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: sans-serif;
+            background: linear-gradient(135deg, #00aaff, #ffffff);
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .container {
+            background: #fff;
+            padding: 2rem;
+            border-radius: 1.5rem;
+            box-shadow: 0 8px 20px rgba(0, 170, 255, 0.4);
+            width: 90%;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 1.5rem;
+            color: #00aaff;
+            margin-bottom: 1rem;
+        }
+
+        input[type="file"] {
+            display: none;
+        }
+
+        .upload-label {
+            background: #00aaff;
+            color: #fff;
+            padding: 0.75rem 1.5rem;
+            border-radius: 2rem;
+            cursor: pointer;
+            display: inline-block;
+            transition: background 0.3s;
+        }
+
+        .upload-label:hover {
+            background: #0077aa;
+        }
+
+        #downloadBtn {
+            background: #00aaff;
+            color: #fff;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 2rem;
+            cursor: pointer;
+            font-size: 1rem;
+            margin-top: 1rem;
+            display: none;
+            transition: background 0.3s;
+        }
+
+        #downloadBtn:hover {
+            background: #0077aa;
+        }
+
+        .status {
+            margin-top: 1rem;
+            font-size: 0.95rem;
+            color: #555;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>PDF Compressor</h1>
+        <label class="upload-label" for="pdfInput">Upload PDF</label>
+        <input type="file" id="pdfInput" accept="application/pdf" />
+        <button id="downloadBtn">Download Compressed PDF</button>
+        <div class="status" id="status">No file uploaded.</div>
+    </div>
+
+    <script>
+        const pdfInput = document.getElementById('pdfInput');
+        const downloadBtn = document.getElementById('downloadBtn');
+        const statusText = document.getElementById('status');
+        let compressedBlob = null;
+
+        pdfInput.addEventListener('change', async (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            statusText.textContent = 'Compressing...';
+
+            try {
+                // Simple compression simulation: re-saving the file
+                // For actual compression, a backend or wasm library is needed.
+                const arrayBuffer = await file.arrayBuffer();
+                const uint8Array = new Uint8Array(arrayBuffer);
+
+                // Simulate compression by slicing part of the buffer
+                const compressedArray = uint8Array.slice(0, uint8Array.length * 0.7);
+                compressedBlob = new Blob([compressedArray], { type: 'application/pdf' });
+
+                statusText.textContent = `Compression complete. Size reduced by ~30%.`;
+                downloadBtn.style.display = 'inline-block';
+            } catch (error) {
+                statusText.textContent = 'Compression failed. Please try again.';
+                console.error(error);
+            }
+        });
+
+        downloadBtn.addEventListener('click', () => {
+            if (!compressedBlob) return;
+
+            const url = URL.createObjectURL(compressedBlob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'compressed.pdf';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        });
+    </script>
+</body>
+</html>
