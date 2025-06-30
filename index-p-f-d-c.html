@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>3D Document Converter</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #00aaff, #00ccff);
+            color: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .converter-container {
+            background: #ffffff;
+            color: #000;
+            padding: 2rem;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 170, 255, 0.5);
+            max-width: 400px;
+            width: 90%;
+            text-align: center;
+            transform: perspective(1000px) rotateX(0deg) rotateY(0deg);
+            transition: transform 0.3s;
+        }
+
+        .converter-container:hover {
+            transform: perspective(1000px) rotateX(3deg) rotateY(3deg);
+        }
+
+        h1 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        input[type="file"], select, button {
+            width: 100%;
+            padding: 0.7rem;
+            margin: 0.5rem 0;
+            border: 2px solid #00aaff;
+            border-radius: 10px;
+            font-size: 1rem;
+        }
+
+        button {
+            background-color: #00aaff;
+            color: white;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #0077aa;
+        }
+
+        @media (max-width: 500px) {
+            .converter-container {
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="converter-container">
+        <h1>3D Document Converter</h1>
+        <input type="file" id="fileInput" accept=".pdf,.docx,.txt" />
+        <select id="formatSelect">
+            <option value="pdf">Convert to PDF</option>
+            <option value="docx">Convert to DOCX</option>
+            <option value="txt">Convert to TXT</option>
+        </select>
+        <button id="convertButton">Convert & Download</button>
+    </div>
+
+    <script>
+        document.getElementById('convertButton').addEventListener('click', async () => {
+            const fileInput = document.getElementById('fileInput');
+            const format = document.getElementById('formatSelect').value;
+
+            if (!fileInput.files[0]) {
+                alert('Please upload a document first.');
+                return;
+            }
+
+            const file = fileInput.files[0];
+            const fileNameWithoutExt = file.name.split('.').slice(0, -1).join('.') || file.name;
+
+            // Simulate conversion by reading file and re-downloading with new extension
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const blob = new Blob([e.target.result], { type: 'application/octet-stream' });
+                const link = document.createElement('a');
+                link.href = URL.createObjectURL(blob);
+                link.download = `${fileNameWithoutExt}.${format}`;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            };
+
+            reader.readAsArrayBuffer(file);
+        });
+    </script>
+</body>
+</html>
