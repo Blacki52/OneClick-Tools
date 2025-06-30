@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>3D Image Rotator & Flipper</title>
+<style>
+  body {
+    font-family: sans-serif;
+    background: white;
+    color: #007bff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    padding: 20px;
+  }
+  .container {
+    max-width: 400px;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+  }
+  canvas {
+    max-width: 100%;
+    border: 2px solid #007bff;
+    border-radius: 12px;
+    box-shadow: 0 0 10px rgba(0,123,255,0.3);
+    transform-style: preserve-3d;
+    transition: transform 0.3s ease;
+  }
+  button, label {
+    background: #007bff;
+    color: white;
+    border: none;
+    padding: 10px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background 0.3s;
+    width: 100%;
+  }
+  button:hover, label:hover {
+    background: #0056b3;
+  }
+  .controls {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.5rem;
+    width: 100%;
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <label for="upload">Upload Image</label>
+  <input type="file" id="upload" accept="image/*" style="display: none;" />
+  <canvas id="canvas"></canvas>
+  <div class="controls">
+    <button id="rotateLeft">Rotate Left</button>
+    <button id="rotateRight">Rotate Right</button>
+    <button id="flipHorizontal">Flip Horizontal</button>
+    <button id="flipVertical">Flip Vertical</button>
+  </div>
+  <button id="download">Download Image</button>
+</div>
+<script>
+const upload = document.getElementById('upload');
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
+const rotateLeftBtn = document.getElementById('rotateLeft');
+const rotateRightBtn = document.getElementById('rotateRight');
+const flipHorizontalBtn = document.getElementById('flipHorizontal');
+const flipVerticalBtn = document.getElementById('flipVertical');
+const downloadBtn = document.getElementById('download');
+
+let img = new Image();
+let angle = 0;
+let flipH = 1;
+let flipV = 1;
+
+upload.addEventListener('change', (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = (event) => {
+    img = new Image();
+    img.onload = () => drawImage();
+    img.src = event.target.result;
+  };
+  reader.readAsDataURL(file);
+});
+
+document.querySelector('label[for="upload"]').addEventListener('click', () => {
+  upload.click();
+});
+
+function drawImage() {
+  const width = img.width;
+  const height = img.height;
+  const size = Math.max(width, height);
+  canvas.width = size;
+  canvas.height = size;
+  ctx.clearRect(0, 0, size, size);
+  ctx.save();
+  ctx.translate(size / 2, size / 2);
+  ctx.rotate(angle * Math.PI / 180);
+  ctx.scale(flipH, flipV);
+  ctx.drawImage(img, -width / 2, -height / 2);
+  ctx.restore();
+}
+
+rotateLeftBtn.addEventListener('click', () => {
+  angle -= 90;
+  drawImage();
+});
+
+rotateRightBtn.addEventListener('click', () => {
+  angle += 90;
+  drawImage();
+});
+
+flipHorizontalBtn.addEventListener('click', () => {
+  flipH *= -1;
+  drawImage();
+});
+
+flipVerticalBtn.addEventListener('click', () => {
+  flipV *= -1;
+  drawImage();
+});
+
+downloadBtn.addEventListener('click', () => {
+  const link = document.createElement('a');
+  link.download = 'modified_image.png';
+  link.href = canvas.toDataURL();
+  link.click();
+});
+</script>
+</body>
+</html>
