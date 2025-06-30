@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GST Calculator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #e0f7fa 0%, #f3e5f5 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .calculator-container {
+            background-color: white;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            width: 100%;
+            max-width: 450px;
+            border-radius: 15px;
+            text-align: center;
+            border-top: 5px solid #8e24aa;
+            border-bottom: 5px solid #43a047;
+        }
+
+        h1 {
+            color: #6a1b9a;
+            margin-bottom: 25px;
+            font-size: 28px;
+            font-weight: 600;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+            background: linear-gradient(to right, #43a047, #8e24aa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .calculator-form {
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            font-size: 16px;
+            margin: 15px 0 8px;
+            color: #555;
+            font-weight: 500;
+            text-align: left;
+        }
+
+        input[type="number"], select {
+            width: 100%;
+            padding: 12px 15px;
+            font-size: 16px;
+            margin-bottom: 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            transition: all 0.3s;
+            background-color: #f9f9f9;
+        }
+
+        input[type="number"]:focus, select:focus {
+            border-color: #8e24aa;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(142, 36, 170, 0.2);
+            background-color: white;
+        }
+
+        .radio-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin: 20px 0;
+        }
+
+        .radio-buttons label {
+            display: flex;
+            align-items: center;
+            margin: 0;
+            padding: 10px 15px;
+            background-color: #f5f5f5;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 2px solid #e0e0e0;
+        }
+
+        .radio-buttons label:hover {
+            background-color: #e8f5e9;
+            border-color: #43a047;
+        }
+
+        input[type="radio"] {
+            margin-right: 8px;
+            accent-color: #8e24aa;
+        }
+
+        button {
+            background: linear-gradient(45deg, #43a047, #7b1fa2);
+            color: white;
+            padding: 14px 20px;
+            font-size: 18px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            width: 100%;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            transition: all 0.3s;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-top: 10px;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+            background: linear-gradient(45deg, #388e3c, #6a1b9a);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .results {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+            border-left: 4px solid #43a047;
+            border-right: 4px solid #8e24aa;
+        }
+
+        .results div {
+            font-size: 18px;
+            margin: 15px 0;
+            color: #333;
+            font-weight: 500;
+            padding: 10px;
+            background-color: white;
+            border-radius: 6px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        #gstAmount {
+            color: #8e24aa;
+            border-left: 3px solid #8e24aa;
+        }
+
+        #totalAmount {
+            color: #43a047;
+            border-left: 3px solid #43a047;
+        }
+
+        @media (max-width: 480px) {
+            .calculator-container {
+                padding: 20px;
+            }
+
+            h1 {
+                font-size: 24px;
+            }
+
+            .radio-buttons {
+                flex-direction: column;
+            }
+
+            .radio-buttons label {
+                margin-bottom: 10px;
+            }
+
+            button {
+                font-size: 16px;
+                padding: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="calculator-container">
+        <h1>GST Calculator</h1>
+        
+        <div class="calculator-form">
+            <label for="amount">Enter Amount:</label>
+            <input type="number" id="amount" placeholder="Enter amount" required>
+            
+            <label for="gstRate">Select GST Rate:</label>
+            <select id="gstRate">
+                <option value="5">5%</option>
+                <option value="12">12%</option>
+                <option value="18">18%</option>
+                <option value="28">28%</option>
+            </select>
+
+            <div class="radio-buttons">
+                <label>
+                    <input type="radio" name="calculationType" value="exclusive" checked> GST Exclusive
+                </label>
+                <label>
+                    <input type="radio" name="calculationType" value="inclusive"> GST Inclusive
+                </label>
+            </div>
+
+            <button onclick="calculateGST()">Calculate GST</button>
+        </div>
+
+        <div class="results">
+            <div id="gstAmount"></div>
+            <div id="totalAmount"></div>
+        </div>
+    </div>
+
+    <script>
+        function calculateGST() {
+            let amount = parseFloat(document.getElementById("amount").value);
+            let gstRate = parseInt(document.getElementById("gstRate").value);
+            let calculationType = document.querySelector('input[name="calculationType"]:checked').value;
+
+            // Validation
+            if (isNaN(amount) || amount <= 0) {
+                alert("Please enter a valid amount.");
+                return;
+            }
+
+            let gstAmount, totalAmount;
+
+            if (calculationType === "exclusive") {
+                // GST Exclusive: Calculate GST and Total Amount
+                gstAmount = (amount * gstRate) / 100;
+                totalAmount = amount + gstAmount;
+                
+                // Display the results
+                document.getElementById("gstAmount").innerHTML = `<strong>GST Amount (${gstRate}%):</strong> ₹${gstAmount.toFixed(2)}`;
+                document.getElementById("totalAmount").innerHTML = `<strong>Total Amount (Including GST):</strong> ₹${totalAmount.toFixed(2)}`;
+            } else if (calculationType === "inclusive") {
+                // GST Inclusive: Calculate GST and Original Amount
+                gstAmount = (amount * gstRate) / (100 + gstRate);
+                totalAmount = amount - gstAmount;
+                
+                // Display the results
+                document.getElementById("gstAmount").innerHTML = `<strong>GST Amount (${gstRate}%):</strong> ₹${gstAmount.toFixed(2)}`;
+                document.getElementById("totalAmount").innerHTML = `<strong>Original Amount (Excluding GST):</strong> ₹${totalAmount.toFixed(2)}`;
+            }
+        }
+    </script>
+</body>
+</html>
