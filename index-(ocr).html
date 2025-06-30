@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Image to Text (OCR) Tool</title>
+    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@2.1.5/dist/tesseract.min.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background-color: #f0f8ff;
+            color: #0d47a1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        h1 {
+            color: #0d47a1;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .container {
+            background: #ffffff;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            max-width: 500px;
+            width: 100%;
+        }
+        input[type="file"] {
+            width: 100%;
+            margin-bottom: 15px;
+        }
+        #imagePreview {
+            width: 100%;
+            max-height: 300px;
+            object-fit: contain;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+        button {
+            background-color: #2196f3;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            width: 100%;
+        }
+        button:hover {
+            background-color: #1976d2;
+        }
+        #extractedText {
+            margin-top: 15px;
+            background: #e3f2fd;
+            padding: 10px;
+            border-radius: 8px;
+            white-space: pre-wrap;
+            max-height: 300px;
+            overflow-y: auto;
+            font-size: 0.95rem;
+        }
+        @media (max-width: 600px) {
+            h1 {
+                font-size: 1.4rem;
+            }
+            button {
+                font-size: 0.95rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>Image to Text (OCR) Tool</h1>
+    <div class="container">
+        <input type="file" id="imageInput" accept="image/*" />
+        <img id="imagePreview" src="" alt="Image Preview" style="display:none;" />
+        <button id="extractButton">Extract Text</button>
+        <div id="extractedText"></div>
+    </div>
+
+    <script>
+        const imageInput = document.getElementById('imageInput');
+        const imagePreview = document.getElementById('imagePreview');
+        const extractButton = document.getElementById('extractButton');
+        const extractedText = document.getElementById('extractedText');
+
+        imageInput.addEventListener('change', function () {
+            const file = this.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    imagePreview.src = e.target.result;
+                    imagePreview.style.display = 'block';
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        extractButton.addEventListener('click', function () {
+            if (!imageInput.files[0]) {
+                alert('Please upload an image first.');
+                return;
+            }
+            extractedText.textContent = 'Processing, please wait...';
+
+            Tesseract.recognize(
+                imageInput.files[0],
+                'eng',
+                {
+                    logger: m => console.log(m)
+                }
+            ).then(({ data: { text } }) => {
+                extractedText.textContent = text || 'No text detected.';
+            }).catch(err => {
+                extractedText.textContent = 'Error extracting text.';
+                console.error(err);
+            });
+        });
+    </script>
+</body>
+</html>
