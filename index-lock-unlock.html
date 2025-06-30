@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PDF Lock/Unlock Tool</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            background: linear-gradient(to bottom right, #00aaff, #ffffff);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            max-width: 400px;
+            width: 90%;
+            text-align: center;
+            transform: perspective(600px) rotateX(5deg);
+            transition: transform 0.5s ease;
+        }
+        .container:hover {
+            transform: perspective(600px) rotateX(0deg);
+        }
+        h1 {
+            color: #00aaff;
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+        }
+        input[type="file"], input[type="password"] {
+            margin: 10px 0;
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #00aaff;
+            border-radius: 8px;
+            outline: none;
+        }
+        button {
+            background-color: #00aaff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            margin: 5px;
+            width: 45%;
+            font-size: 1rem;
+            transition: background 0.3s;
+        }
+        button:hover {
+            background-color: #0088cc;
+        }
+        @media (max-width: 500px) {
+            .container {
+                transform: none;
+                box-shadow: none;
+                padding: 15px;
+            }
+            button {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>PDF Lock/Unlock</h1>
+        <input type="file" id="pdfFile" accept="application/pdf" />
+        <input type="password" id="password" placeholder="Enter password (for lock)" />
+        <div>
+            <button onclick="lockPDF()">Lock PDF</button>
+            <button onclick="unlockPDF()">Unlock PDF</button>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
+    <script>
+        async function lockPDF() {
+            const fileInput = document.getElementById('pdfFile');
+            const passwordInput = document.getElementById('password').value;
+            if (!fileInput.files.length || !passwordInput) {
+                alert('Please select a PDF and enter a password to lock.');
+                return;
+            }
+            const file = fileInput.files[0];
+            const arrayBuffer = await file.arrayBuffer();
+            const pdfDoc = await PDFLib.PDFDocument.load(arrayBuffer);
+            pdfDoc.encrypt({ userPassword: passwordInput, ownerPassword: passwordInput });
+            const pdfBytes = await pdfDoc.save();
+
+            download(pdfBytes, `locked_${file.name}`, 'application/pdf');
+        }
+
+        async function unlockPDF() {
+            const fileInput = document.getElementById('pdfFile');
+            const passwordInput = document.getElementById('password').value;
+            if (!fileInput.files.length) {
+                alert('Please select a locked PDF to unlock.');
+                return;
+            }
+            const file = fileInput.files[0];
+            const arrayBuffer = await file.arrayBuffer();
+            let pdfDoc;
+            try {
+                pdfDoc = await PDFLib.PDFDocument.load(arrayBuffer, { password: passwordInput || undefined });
+            } catch (e) {
+                alert('Incorrect password or unable to open the PDF.');
+                return;
+            }
+
+            // Remove encryption by saving without password
+            const pdfBytes = await pdfDoc.save();
+            download(pdfBytes, `unlocked_${file.name}`, 'application/pdf');
+        }
+
+        function download(data, filename, type) {
+            const blob = new Blob([data], { type: type });
+            const link = document.createElement('a');
+            link.href = window.URL.createObjectURL(blob);
+            link.download = filename;
+            link.click();
+        }
+    </script>
+</body>
+</html>
