@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Time Zone Converter</title>
+<style>
+  body {
+    font-family: 'Segoe UI', sans-serif;
+    background: linear-gradient(135deg, #ffd7b5, #ffb3ba);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+  }
+  .converter {
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(255, 105, 97, 0.3);
+    padding: 30px;
+    width: 320px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transform: perspective(800px) rotateX(5deg);
+    transition: transform 0.3s;
+  }
+  .converter:hover {
+    transform: perspective(800px) rotateX(0deg);
+  }
+  h2 {
+    color: #ff6b35;
+    margin-bottom: 20px;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+  }
+  select, input[type="time"] {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    border: 2px solid #ff6b35;
+    border-radius: 10px;
+    font-size: 16px;
+    outline: none;
+    background-color: #fff8f5;
+  }
+  button {
+    background: linear-gradient(to right, #ff6b35, #ff8c42);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    margin-top: 10px;
+    transition: all 0.3s;
+    box-shadow: 0 4px 6px rgba(255, 107, 53, 0.2);
+  }
+  button:hover {
+    background: linear-gradient(to right, #ff8c42, #ff6b35);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 8px rgba(255, 107, 53, 0.3);
+  }
+  .result {
+    margin-top: 20px;
+    font-size: 18px;
+    color: #333;
+    word-break: break-word;
+    text-align: center;
+    padding: 10px;
+    border-radius: 8px;
+    background-color: #fff8f5;
+    width: 100%;
+  }
+  #resetBtn {
+    background: linear-gradient(to right, #ff4d4d, #ff6b6b);
+    box-shadow: 0 4px 6px rgba(255, 77, 77, 0.2);
+  }
+  #resetBtn:hover {
+    background: linear-gradient(to right, #ff6b6b, #ff4d4d);
+    box-shadow: 0 6px 8px rgba(255, 77, 77, 0.3);
+  }
+</style>
+</head>
+<body>
+<div class="converter">
+  <h2>Time Zone Converter</h2>
+  <input type="time" id="inputTime" />
+  <select id="fromZone">
+    <option value="UTC">UTC</option>
+    <option value="America/New_York">New York (EST)</option>
+    <option value="Europe/London">London (GMT)</option>
+    <option value="Asia/Kolkata">Kolkata (IST)</option>
+    <option value="Asia/Tokyo">Tokyo (JST)</option>
+    <option value="Australia/Sydney">Sydney (AEST)</option>
+  </select>
+  <select id="toZone">
+    <option value="UTC">UTC</option>
+    <option value="America/New_York">New York (EST)</option>
+    <option value="Europe/London">London (GMT)</option>
+    <option value="Asia/Kolkata">Kolkata (IST)</option>
+    <option value="Asia/Tokyo">Tokyo (JST)</option>
+    <option value="Australia/Sydney">Sydney (AEST)</option>
+  </select>
+  <button id="convertBtn">Convert</button>
+  <button id="resetBtn" style="margin-top:10px;">Reset</button>
+  <div class="result" id="result"></div>
+</div>
+<script>
+  const convertBtn = document.getElementById('convertBtn');
+  const resetBtn = document.getElementById('resetBtn');
+
+  convertBtn.addEventListener('click', () => {
+    const inputTime = document.getElementById('inputTime').value;
+    const fromZone = document.getElementById('fromZone').value;
+    const toZone = document.getElementById('toZone').value;
+    const resultDiv = document.getElementById('result');
+
+    if (!inputTime) {
+      resultDiv.textContent = 'Please enter a time to convert.';
+      return;
+    }
+
+    const [hour, minute] = inputTime.split(':');
+    const now = new Date();
+    now.setHours(hour);
+    now.setMinutes(minute);
+
+    try {
+      const fromTime = new Intl.DateTimeFormat('en-US', {
+        timeZone: fromZone,
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: false
+      }).format(now);
+
+      const [fromHour, fromMinute] = fromTime.split(':');
+      const utcDate = new Date(Date.UTC(now.getFullYear(), now.getMonth(), now.getDate(), fromHour, fromMinute));
+
+      const options = {
+        timeZone: toZone,
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: false
+      };
+
+      const convertedTime = new Intl.DateTimeFormat('en-US', options).format(utcDate);
+
+      resultDiv.textContent = `Equivalent time in ${toZone}: ${convertedTime}`;
+    } catch (error) {
+      resultDiv.textContent = 'Conversion error. Please check time zones.';
+    }
+  });
+
+  resetBtn.addEventListener('click', () => {
+    document.getElementById('inputTime').value = '';
+    document.getElementById('fromZone').selectedIndex = 0;
+    document.getElementById('toZone').selectedIndex = 0;
+    document.getElementById('result').textContent = '';
+  });
+</script>
+</body>
+</html>
