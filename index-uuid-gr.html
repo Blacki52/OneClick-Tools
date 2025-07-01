@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>UUID Generator</title>
+    <style>
+        body {
+            background: linear-gradient(135deg, #ff00aa, #aa00ff);
+            font-family: 'Segoe UI', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            background: white;
+            padding: 2rem;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            width: 90%;
+            max-width: 400px;
+            transform: perspective(1000px) rotateX(5deg);
+            transition: transform 0.3s ease;
+        }
+        .container:hover {
+            transform: perspective(1000px) rotateX(0deg);
+        }
+        h1 {
+            font-size: 1.5rem;
+            color: #aa00ff;
+            margin-bottom: 1rem;
+        }
+        #uuid {
+            font-size: 1rem;
+            background: #faf0ff;
+            padding: 1rem;
+            border-radius: 10px;
+            word-break: break-all;
+            margin-bottom: 1rem;
+        }
+        button {
+            background: #cc00ff;
+            color: white;
+            border: none;
+            padding: 0.7rem 1.5rem;
+            border-radius: 10px;
+            font-size: 1rem;
+            margin: 0.3rem;
+            cursor: pointer;
+            transition: background 0.3s, transform 0.2s;
+        }
+        button:hover {
+            background: #aa00aa;
+            transform: scale(1.05);
+        }
+        button:active {
+            transform: scale(0.97);
+        }
+        @media (max-width: 500px) {
+            h1 {
+                font-size: 1.2rem;
+            }
+            button {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>UUID Generator</h1>
+        <div id="uuid">Your UUID will appear here</div>
+        <button id="generateBtn">Generate</button>
+        <button id="copyBtn">Copy</button>
+        <button id="clearBtn">Clear</button>
+    </div>
+
+    <script>
+        const uuidDisplay = document.getElementById('uuid');
+        const generateBtn = document.getElementById('generateBtn');
+        const copyBtn = document.getElementById('copyBtn');
+        const clearBtn = document.getElementById('clearBtn');
+
+        function generateUUID() {
+            const uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+                const r = Math.random() * 16 | 0;
+                const v = c === 'x' ? r : (r & 0x3 | 0x8);
+                return v.toString(16);
+            });
+            uuidDisplay.textContent = uuid;
+        }
+
+        generateBtn.addEventListener('click', generateUUID);
+
+        copyBtn.addEventListener('click', () => {
+            const text = uuidDisplay.textContent;
+            if (text && text !== 'Your UUID will appear here') {
+                navigator.clipboard.writeText(text).then(() => {
+                    copyBtn.textContent = 'Copied!';
+                    setTimeout(() => {
+                        copyBtn.textContent = 'Copy';
+                    }, 1500);
+                });
+            }
+        });
+
+        clearBtn.addEventListener('click', () => {
+            uuidDisplay.textContent = 'Your UUID will appear here';
+        });
+    </script>
+</body>
+</html>
