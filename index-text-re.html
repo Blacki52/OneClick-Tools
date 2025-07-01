@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Caller Text Reverse Tool</title>
+<style>
+  body {
+    background: #ffeeee;
+    font-family: 'Segoe UI', sans-serif;
+    color: #660000;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+  }
+
+  .container {
+    background: #ffdddd;
+    border-radius: 20px;
+    box-shadow: 0 10px 20px rgba(204, 0, 0, 0.2);
+    padding: 20px;
+    max-width: 500px;
+    width: 100%;
+    border: 2px solid #cc0000;
+  }
+
+  h1 {
+    text-align: center;
+    color: #008000;
+    font-weight: 600;
+    text-shadow: 1px 1px 2px #cc0000;
+  }
+
+  textarea {
+    width: 100%;
+    height: 150px;
+    padding: 10px;
+    border: 2px solid #008000;
+    border-radius: 10px;
+    font-size: 16px;
+    resize: vertical;
+    background: #f8f8f8;
+  }
+
+  select, button {
+    padding: 10px;
+    font-size: 16px;
+    border: none;
+    border-radius: 10px;
+    margin: 5px;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+
+  select {
+    width: 100%;
+    border: 2px solid #008000;
+    background: white;
+    color: #660000;
+  }
+
+  button {
+    background: #cc0000;
+    color: white;
+    flex: 1;
+  }
+
+  button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 10px rgba(204, 0, 0, 0.3);
+  }
+
+  #reverseBtn {
+    background: #008000;
+  }
+
+  .button-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+  }
+
+  .output {
+    margin-top: 20px;
+    background: #ddffdd;
+    padding: 10px;
+    border-radius: 10px;
+    min-height: 100px;
+    white-space: pre-wrap;
+    font-size: 16px;
+    border: 1px solid #008000;
+    perspective: 800px;
+    transform-style: preserve-3d;
+  }
+
+  .output-text {
+    transform: rotateX(10deg) rotateY(5deg);
+    display: inline-block;
+    backface-visibility: hidden;
+    color: #006600;
+  }
+
+  @media (max-width: 600px) {
+    .button-group {
+      flex-direction: column;
+    }
+  }
+</style>
+</head>
+<body>
+  <div class="container">
+    <h1>Caller Text Reverse Tool</h1>
+    <textarea id="inputText" placeholder="Enter your message to reverse..."></textarea>
+    <select id="reverseMode">
+      <option value="full">Reverse Entire Message</option>
+      <option value="word">Reverse Each Word</option>
+      <option value="line">Reverse Each Line</option>
+    </select>
+    <div class="button-group">
+      <button id="reverseBtn">Reverse</button>
+      <button id="clearBtn">Clear</button>
+      <button id="copyBtn">Copy Output</button>
+    </div>
+    <div class="output" id="output">
+      <span class="output-text" id="outputText"></span>
+    </div>
+  </div>
+
+<script>
+const inputText = document.getElementById('inputText');
+const reverseMode = document.getElementById('reverseMode');
+const outputText = document.getElementById('outputText');
+const reverseBtn = document.getElementById('reverseBtn');
+const clearBtn = document.getElementById('clearBtn');
+const copyBtn = document.getElementById('copyBtn');
+
+function reverseText() {
+  const text = inputText.value;
+  const mode = reverseMode.value;
+  let result = '';
+
+  if (mode === 'full') {
+    result = text.split('').reverse().join('');
+  } else if (mode === 'word') {
+    result = text.split(/(\s+)/).map(word => word.trim() ? word.split('').reverse().join('') : word).join('');
+  } else if (mode === 'line') {
+    result = text.split('\n').map(line => line.split('').reverse().join('')).join('\n');
+  }
+
+  outputText.textContent = result;
+}
+
+reverseBtn.addEventListener('click', reverseText);
+
+clearBtn.addEventListener('click', () => {
+  inputText.value = '';
+  outputText.textContent = '';
+});
+
+copyBtn.addEventListener('click', () => {
+  const range = document.createRange();
+  range.selectNode(outputText);
+  window.getSelection().removeAllRanges();
+  window.getSelection().addRange(range);
+  try {
+    document.execCommand('copy');
+    alert('Output copied to clipboard');
+  } catch (err) {
+    alert('Failed to copy');
+  }
+  window.getSelection().removeAllRanges();
+});
+</script>
+</body>
+</html>
