@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Pink Block Base64 Tool</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: #fff5f7;
+            color: #555;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 1rem;
+            margin: 0;
+        }
+
+        .container {
+            background: #ffebee;
+            border-radius: 1rem;
+            box-shadow: 0 10px 30px rgba(255, 105, 180, 0.2);
+            padding: 2rem;
+            max-width: 500px;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            border: 2px solid #ff69b4;
+        }
+
+        .block {
+            background: white;
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            box-shadow: 0 4px 15px rgba(255, 105, 180, 0.1);
+            border: 1px solid #ffb6c1;
+        }
+
+        textarea {
+            width: 100%;
+            height: 120px;
+            padding: 1rem;
+            border: 2px solid #ff69b4;
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            resize: vertical;
+            background: #fff9fa;
+            color: #555;
+        }
+
+        textarea:focus {
+            outline: none;
+            box-shadow: 0 0 10px rgba(255, 105, 180, 0.3);
+            border-color: #ff1493;
+        }
+
+        .buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.8rem;
+        }
+
+        button {
+            background: #ff69b4;
+            color: white;
+            border: none;
+            padding: 0.8rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        button:hover {
+            background: #ff1493;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(255, 20, 147, 0.3);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .title {
+            color: #ff1493;
+            text-align: center;
+            margin-bottom: 0.5rem;
+            font-size: 1.5rem;
+        }
+
+        @media (max-width: 500px) {
+            .buttons {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="title">Base64 Encoder/Decoder</h1>
+        
+        <div class="block">
+            <textarea id="inputText" placeholder="Enter text to encode or Base64 to decode..."></textarea>
+        </div>
+        
+        <div class="buttons">
+            <button onclick="encodeBase64()">Encode to Base64</button>
+            <button onclick="decodeBase64()">Decode from Base64</button>
+            <button onclick="clearFields()">Clear All</button>
+            <button onclick="copyOutput()">Copy Result</button>
+        </div>
+        
+        <div class="block">
+            <textarea id="outputText" placeholder="Results will appear here..." readonly></textarea>
+        </div>
+    </div>
+
+    <script>
+        const inputText = document.getElementById('inputText');
+        const outputText = document.getElementById('outputText');
+
+        function encodeBase64() {
+            try {
+                const encoded = btoa(unescape(encodeURIComponent(inputText.value)));
+                outputText.value = encoded;
+            } catch (e) {
+                outputText.value = 'Error: Unable to encode input.';
+            }
+        }
+
+        function decodeBase64() {
+            try {
+                const decoded = decodeURIComponent(escape(atob(inputText.value)));
+                outputText.value = decoded;
+            } catch (e) {
+                outputText.value = 'Error: Invalid Base64 input.';
+            }
+        }
+
+        function clearFields() {
+            inputText.value = '';
+            outputText.value = '';
+        }
+
+        function copyOutput() {
+            outputText.select();
+            outputText.setSelectionRange(0, 99999);
+            document.execCommand('copy');
+            
+            // Visual feedback
+            const copyBtn = document.querySelector('button[onclick="copyOutput()"]');
+            copyBtn.textContent = 'Copied!';
+            copyBtn.style.background = '#4CAF50';
+            setTimeout(() => {
+                copyBtn.textContent = 'Copy Result';
+                copyBtn.style.background = '#ff69b4';
+            }, 2000);
+        }
+
+        // Auto-detect and process on paste
+        inputText.addEventListener('paste', (e) => {
+            setTimeout(() => {
+                try {
+                    decodeBase64();
+                } catch {
+                    try {
+                        encodeBase64();
+                    } catch {
+                        // Do nothing if both fail
+                    }
+                }
+            }, 50);
+        });
+    </script>
+</body>
+</html>
