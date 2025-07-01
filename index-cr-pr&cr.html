@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Forest Color Picker & Converter</title>
+<style>
+  body {
+    font-family: 'Segoe UI', sans-serif;
+    background: #0a3d1a url('https://images.unsplash.com/photo-1448375240586-882707db888b?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80') no-repeat center center;
+    background-size: cover;
+    color: #f0f8ff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    flex-direction: column;
+  }
+  .picker-container {
+    background: rgba(10, 61, 26, 0.85);
+    border-radius: 16px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.3), 0 0 15px rgba(50, 205, 50, 0.3);
+    padding: 20px;
+    width: 90%;
+    max-width: 400px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    backdrop-filter: blur(3px);
+    border: 1px solid rgba(50, 205, 50, 0.3);
+  }
+  .color-preview {
+    width: 120px;
+    height: 120px;
+    border-radius: 12px;
+    border: 4px solid #32cd32;
+    transform: rotateX(20deg) rotateY(20deg);
+    transition: background 0.3s, transform 0.5s, box-shadow 0.5s;
+    box-shadow: 0 0 10px rgba(50, 205, 50, 0.3);
+  }
+  .picker-container:hover .color-preview {
+    transform: rotateX(0deg) rotateY(0deg) scale(1.05);
+    box-shadow: 0 0 20px rgba(50, 205, 50, 0.5);
+  }
+  input[type="color"] {
+    border: none;
+    background: none;
+    cursor: pointer;
+    width: 100%;
+    height: 40px;
+  }
+  .input-group {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    gap: 8px;
+  }
+  .input-group input {
+    flex: 1;
+    padding: 8px;
+    background: rgba(0, 0, 0, 0.3);
+    border: 2px solid #32cd32;
+    border-radius: 8px;
+    font-size: 14px;
+    color: white;
+  }
+  button.copy-btn {
+    background: #32cd32;
+    color: #0a3d1a;
+    border: none;
+    border-radius: 8px;
+    padding: 8px 12px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background 0.3s, transform 0.2s;
+    font-weight: bold;
+  }
+  button.copy-btn:hover {
+    background: #28a428;
+    transform: translateY(-2px);
+  }
+  h1 {
+    color: #f0f8ff;
+    text-shadow: 0 0 10px #32cd32;
+    margin-bottom: 20px;
+    font-size: 2rem;
+    text-align: center;
+  }
+  .leaf-decoration {
+    position: absolute;
+    width: 30px;
+    height: 30px;
+    opacity: 0.7;
+    z-index: -1;
+  }
+  .leaf1 {
+    top: 20%;
+    left: 10%;
+    transform: rotate(45deg);
+  }
+  .leaf2 {
+    bottom: 15%;
+    right: 10%;
+    transform: rotate(-20deg);
+  }
+</style>
+</head>
+<body>
+  <h1>Forest Color Picker</h1>
+  <div class="picker-container">
+    <div class="color-preview" id="colorPreview"></div>
+    <input type="color" id="colorPicker" />
+
+    <div class="input-group">
+      <input type="text" id="hexInput" placeholder="#HEX" />
+      <button class="copy-btn" onclick="copyToClipboard('hexInput')">Copy</button>
+    </div>
+
+    <div class="input-group">
+      <input type="text" id="rgbInput" placeholder="RGB" />
+      <button class="copy-btn" onclick="copyToClipboard('rgbInput')">Copy</button>
+    </div>
+
+    <div class="input-group">
+      <input type="text" id="hslInput" placeholder="HSL" />
+      <button class="copy-btn" onclick="copyToClipboard('hslInput')">Copy</button>
+    </div>
+  </div>
+
+  <!-- Decorative leaf elements -->
+  <div class="leaf-decoration leaf1">🍃</div>
+  <div class="leaf-decoration leaf2">🍃</div>
+
+<script>
+function hexToRgb(hex) {
+    hex = hex.replace('#', '');
+    if (hex.length === 3) {
+        hex = hex.split('').map(c => c + c).join('');
+    }
+    const bigint = parseInt(hex, 16);
+    const r = (bigint >> 16) & 255;
+    const g = (bigint >> 8) & 255;
+    const b = bigint & 255;
+    return `rgb(${r}, ${g}, ${b})`;
+}
+
+function rgbToHsl(rgb) {
+    const result = rgb.match(/\d+/g);
+    const r = result[0] / 255;
+    const g = result[1] / 255;
+    const b = result[2] / 255;
+
+    const max = Math.max(r, g, b);
+    const min = Math.min(r, g, b);
+    let h, s, l = (max + min) / 2;
+
+    if (max === min) {
+        h = s = 0;
+    } else {
+        const d = max - min;
+        s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+        switch (max) {
+            case r: h = (g - b) / d + (g < b ? 6 : 0); break;
+            case g: h = (b - r) / d + 2; break;
+            case b: h = (r - g) / d + 4; break;
+        }
+        h /= 6;
+    }
+    h = Math.round(h * 360);
+    s = Math.round(s * 100);
+    l = Math.round(l * 100);
+    return `hsl(${h}, ${s}%, ${l}%)`;
+}
+
+function updateColorInputs(hex) {
+    const rgb = hexToRgb(hex);
+    const hsl = rgbToHsl(rgb);
+
+    document.getElementById('hexInput').value = hex.toUpperCase();
+    document.getElementById('rgbInput').value = rgb;
+    document.getElementById('hslInput').value = hsl;
+    document.getElementById('colorPreview').style.background = hex;
+}
+
+document.getElementById('colorPicker').addEventListener('input', (e) => {
+    updateColorInputs(e.target.value);
+});
+
+document.getElementById('hexInput').addEventListener('input', (e) => {
+    let value = e.target.value;
+    if (!value.startsWith('#')) value = '#' + value;
+    if (/^#([0-9A-Fa-f]{3}){1,2}$/.test(value)) {
+        updateColorInputs(value);
+    }
+});
+
+document.getElementById('rgbInput').addEventListener('input', (e) => {
+    const value = e.target.value;
+    const result = value.match(/\d+/g);
+    if (result && result.length === 3) {
+        const r = parseInt(result[0]);
+        const g = parseInt(result[1]);
+        const b = parseInt(result[2]);
+        if ([r, g, b].every(v => v >= 0 && v <= 255)) {
+            const hex = `#${((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1)}`;
+            updateColorInputs(hex);
+        }
+    }
+});
+
+document.getElementById('hslInput').addEventListener('input', (e) => {
+    const value = e.target.value;
+    const result = value.match(/\d+/g);
+    if (result && result.length >= 3) {
+        const h = parseInt(result[0]);
+        const s = parseInt(result[1]);
+        const l = parseInt(result[2]);
+        if (h >= 0 && h <= 360 && s >= 0 && s <= 100 && l >= 0 && l <= 100) {
+            const c = (1 - Math.abs(2 * l / 100 - 1)) * s / 100;
+            const x = c * (1 - Math.abs((h / 60) % 2 - 1));
+            const m = l / 100 - c / 2;
+            let r = 0, g = 0, b = 0;
+
+            if (h < 60) { r = c; g = x; b = 0; }
+            else if (h < 120) { r = x; g = c; b = 0; }
+            else if (h < 180) { r = 0; g = c; b = x; }
+            else if (h < 240) { r = 0; g = x; b = c; }
+            else if (h < 300) { r = x; g = 0; b = c; }
+            else { r = c; g = 0; b = x; }
+
+            r = Math.round((r + m) * 255);
+            g = Math.round((g + m) * 255);
+            b = Math.round((b + m) * 255);
+
+            const hex = `#${((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1)}`;
+            updateColorInputs(hex);
+        }
+    }
+});
+
+function copyToClipboard(elementId) {
+    const copyText = document.getElementById(elementId);
+    copyText.select();
+    copyText.setSelectionRange(0, 99999);
+    document.execCommand("copy");
+    
+    // Create a custom notification styled to match the forest theme
+    const notification = document.createElement('div');
+    notification.textContent = `Copied: ${copyText.value}`;
+    notification.style.position = 'fixed';
+    notification.style.bottom = '20px';
+    notification.style.left = '50%';
+    notification.style.transform = 'translateX(-50%)';
+    notification.style.backgroundColor = '#32cd32';
+    notification.style.color = '#0a3d1a';
+    notification.style.padding = '10px 20px';
+    notification.style.borderRadius = '5px';
+    notification.style.boxShadow = '0 0 10px rgba(50, 205, 50, 0.5)';
+    notification.style.zIndex = '1000';
+    notification.style.fontWeight = 'bold';
+    document.body.appendChild(notification);
+    
+    setTimeout(() => {
+        document.body.removeChild(notification);
+    }, 2000);
+}
+
+updateColorInputs('#32cd32'); // Default to lime green theme color
+</script>
+</body>
+</html>
