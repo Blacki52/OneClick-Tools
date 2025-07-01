@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Remove Duplicate Lines Tool</title>
+<style>
+  body {
+    background: linear-gradient(135deg, #00b4ff, #ffffff);
+    font-family: 'Segoe UI', sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    padding: 20px;
+  }
+  .container {
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0, 180, 255, 0.2);
+    padding: 20px;
+    max-width: 500px;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  textarea {
+    width: 100%;
+    height: 200px;
+    padding: 12px;
+    font-size: 14px;
+    border-radius: 8px;
+    border: 2px solid #00b4ff;
+    resize: vertical;
+  }
+  button {
+    background-color: #00b4ff;
+    color: white;
+    border: none;
+    padding: 12px;
+    font-size: 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+  button:hover {
+    background-color: #0095cc;
+    transform: scale(1.02);
+  }
+  .button-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  @media (max-width: 500px) {
+    textarea {
+      height: 150px;
+    }
+  }
+  @keyframes pinkRedPulse {
+    0% {
+      background: linear-gradient(45deg, #ff1493, #ff0000);
+      box-shadow: 0 0 10px rgba(255, 20, 147, 0.7);
+    }
+    50% {
+      background: linear-gradient(45deg, #ff0000, #ff1493);
+      box-shadow: 0 0 20px rgba(255, 0, 0, 0.7);
+    }
+    100% {
+      background: linear-gradient(45deg, #ff1493, #ff0000);
+      box-shadow: 0 0 10px rgba(255, 20, 147, 0.7);
+    }
+  }
+  .pink-red-effect {
+    animation: pinkRedPulse 0.8s linear;
+    color: white;
+    font-weight: bold;
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <textarea id="inputText" placeholder="Paste or type your text here..."></textarea>
+  <div class="button-group">
+    <button id="removeBtn">Remove Duplicates</button>
+    <button id="clearBtn">Clear</button>
+    <button id="copyBtn">Copy Output</button>
+  </div>
+</div>
+<script>
+const inputText = document.getElementById('inputText');
+const removeBtn = document.getElementById('removeBtn');
+const clearBtn = document.getElementById('clearBtn');
+const copyBtn = document.getElementById('copyBtn');
+
+removeBtn.addEventListener('click', () => {
+  // Add pink-red effect
+  removeBtn.classList.add('pink-red-effect');
+  
+  const lines = inputText.value.split('\n');
+  const seen = new Set();
+  const uniqueLines = [];
+  lines.forEach(line => {
+    if (!seen.has(line.trim())) {
+      seen.add(line.trim());
+      uniqueLines.push(line);
+    }
+  });
+  inputText.value = uniqueLines.join('\n');
+  
+  // Remove effect after animation completes
+  setTimeout(() => {
+    removeBtn.classList.remove('pink-red-effect');
+  }, 800);
+});
+
+clearBtn.addEventListener('click', () => {
+  inputText.value = '';
+});
+
+copyBtn.addEventListener('click', async () => {
+  try {
+    await navigator.clipboard.writeText(inputText.value);
+    copyBtn.textContent = 'Copied!';
+    setTimeout(() => {
+      copyBtn.textContent = 'Copy Output';
+    }, 1500);
+  } catch (err) {
+    alert('Failed to copy.');
+  }
+});
+</script>
+</body>
+</html>
