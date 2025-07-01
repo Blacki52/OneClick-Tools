@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Contrast Checker Tool</title>
+<style>
+  body {
+    font-family: 'Segoe UI', sans-serif;
+    background: linear-gradient(135deg, #ff9a9e, #fad0c4, #fbc2eb, #a18cd1);
+    background-size: 400% 400%;
+    animation: gradientBG 15s ease infinite;
+    color: #333;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+  }
+  @keyframes gradientBG {
+    0% {
+      background-position: 0% 50%;
+    }
+    50% {
+      background-position: 100% 50%;
+    }
+    100% {
+      background-position: 0% 50%;
+    }
+  }
+  .container {
+    background: #ffffff;
+    border-radius: 20px;
+    box-shadow: 0 15px 30px rgba(0, 123, 255, 0.2);
+    padding: 30px;
+    width: 90%;
+    max-width: 400px;
+    text-align: center;
+    transition: transform 0.3s ease;
+  }
+  .container:hover {
+    transform: translateY(-5px);
+  }
+  h2 {
+    color: #007bff;
+    margin-bottom: 20px;
+  }
+  input[type="text"] {
+    width: 80%;
+    padding: 10px;
+    border: 2px solid #007bff;
+    border-radius: 10px;
+    margin: 10px 0;
+    font-size: 1em;
+    text-align: center;
+  }
+  .button-group button {
+    background: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    padding: 10px 15px;
+    margin: 5px;
+    cursor: pointer;
+    transition: background 0.3s;
+  }
+  .button-group button:hover {
+    background: #0056b3;
+  }
+  .result {
+    margin-top: 20px;
+    font-size: 1.2em;
+    font-weight: bold;
+  }
+  .color-preview {
+    display: flex;
+    justify-content: center;
+    margin-top: 15px;
+  }
+  .color-box {
+    width: 60px;
+    height: 60px;
+    border-radius: 10px;
+    margin: 0 10px;
+    border: 2px solid #007bff;
+  }
+</style>
+</head>
+<body>
+  <div class="container">
+    <h2>Contrast Checker</h2>
+    <input type="text" id="color1" placeholder="Enter Color 1 (HEX/RGB/HSL)" />
+    <input type="text" id="color2" placeholder="Enter Color 2 (HEX/RGB/HSL)" />
+    <div class="button-group">
+      <button onclick="checkContrast()">Check Contrast</button>
+      <button onclick="copyContrast()">Copy Ratio</button>
+      <button onclick="resetForm()">Reset</button>
+    </div>
+    <div class="result" id="result"></div>
+    <div class="color-preview">
+      <div class="color-box" id="box1"></div>
+      <div class="color-box" id="box2"></div>
+    </div>
+  </div>
+
+<script>
+function parseColor(input) {
+  const ctx = document.createElement('canvas').getContext('2d');
+  ctx.fillStyle = input;
+  return ctx.fillStyle;
+}
+function getLuminance(hex) {
+  hex = hex.replace('#', '');
+  if (hex.length === 3) {
+    hex = hex.split('').map(c => c + c).join('');
+  }
+  const rgb = [
+    parseInt(hex.substring(0, 2), 16) / 255,
+    parseInt(hex.substring(2, 4), 16) / 255,
+    parseInt(hex.substring(4, 6), 16) / 255
+  ].map(c => c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4));
+  return 0.2126 * rgb[0] + 0.7152 * rgb[1] + 0.0722 * rgb[2];
+}
+function getContrast(hex1, hex2) {
+  const lum1 = getLuminance(hex1);
+  const lum2 = getLuminance(hex2);
+  const brightest = Math.max(lum1, lum2);
+  const darkest = Math.min(lum1, lum2);
+  return ((brightest + 0.05) / (darkest + 0.05)).toFixed(2);
+}
+function checkContrast() {
+  const color1Input = document.getElementById('color1').value;
+  const color2Input = document.getElementById('color2').value;
+  const color1 = parseColor(color1Input);
+  const color2 = parseColor(color2Input);
+
+  document.getElementById('box1').style.background = color1;
+  document.getElementById('box2').style.background = color2;
+
+  const hex1 = rgbToHex(color1);
+  const hex2 = rgbToHex(color2);
+  const ratio = getContrast(hex1, hex2);
+
+  const pass = ratio >= 4.5 ? '✅ Passes WCAG' : '❌ Fails WCAG';
+
+  document.getElementById('result').innerText = `Contrast Ratio: ${ratio} - ${pass}`;
+  document.getElementById('result').dataset.ratio = ratio;
+}
+function rgbToHex(color) {
+  const ctx = document.createElement('canvas').getContext('2d');
+  ctx.fillStyle = color;
+  const computed = ctx.fillStyle;
+  return computed;
+}
+function copyContrast() {
+  const ratio = document.getElementById('result').dataset.ratio;
+  if (ratio) {
+    navigator.clipboard.writeText(ratio).then(() => {
+      alert('Contrast ratio copied to clipboard.');
+    });
+  } else {
+    alert('Please check contrast first.');
+  }
+}
+function resetForm() {
+  document.getElementById('color1').value = '';
+  document.getElementById('color2').value = '';
+  document.getElementById('result').innerText = '';
+  document.getElementById('box1').style.background = '#ffffff';
+  document.getElementById('box2').style.background = '#ffffff';
+}
+</script>
+</body>
+</html>
