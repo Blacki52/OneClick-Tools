@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>HEX to RGB Converter</title>
+<style>
+  body {
+    background: linear-gradient(135deg, #ff9a9e, #fad0c4, #fad0c4, #a18cd1);
+    font-family: 'Segoe UI', sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+  }
+  .converter {
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(255, 105, 180, 0.3);
+    padding: 20px;
+    width: 90%;
+    max-width: 400px;
+    text-align: center;
+    transition: transform 0.3s ease;
+    backdrop-filter: blur(5px);
+  }
+  .converter:hover {
+    transform: translateY(-5px);
+  }
+  h2 {
+    color: #ff1493;
+    margin-bottom: 15px;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+  }
+  input {
+    width: 80%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 2px solid #ff69b4;
+    border-radius: 10px;
+    font-size: 16px;
+    outline: none;
+    transition: border 0.3s, box-shadow 0.3s;
+    background: rgba(255, 255, 255, 0.8);
+  }
+  input:focus {
+    border: 2px solid #c71585;
+    box-shadow: 0 0 8px rgba(255, 105, 180, 0.4);
+  }
+  .buttons button {
+    background: linear-gradient(to right, #ff69b4, #ff1493);
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    padding: 10px 15px;
+    margin: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: all 0.3s, transform 0.2s;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+  .buttons button:hover {
+    background: linear-gradient(to right, #ff1493, #c71585);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+  }
+  .output {
+    margin-top: 15px;
+    font-size: 16px;
+    color: #333;
+    word-break: break-all;
+    background: rgba(255, 255, 255, 0.7);
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 105, 180, 0.3);
+  }
+  .color-preview {
+    width: 60px;
+    height: 60px;
+    border-radius: 10px;
+    margin: 10px auto;
+    border: 2px solid #ff69b4;
+    box-shadow: 0 5px 15px rgba(255, 105, 180, 0.3);
+    transition: all 0.3s ease;
+  }
+</style>
+</head>
+<body>
+  <div class="converter">
+    <h2>HEX to RGB Converter</h2>
+    <input type="text" id="hexInput" placeholder="Enter HEX color (e.g., #ff69b4)" />
+    <div class="buttons">
+      <button onclick="convertHexToRGB()">Convert</button>
+      <button onclick="clearFields()">Clear</button>
+      <button onclick="copyOutput()">Copy Output</button>
+    </div>
+    <div class="color-preview" id="colorPreview"></div>
+    <div class="output" id="output"></div>
+  </div>
+
+<script>
+function convertHexToRGB() {
+  const hex = document.getElementById('hexInput').value.trim();
+  const output = document.getElementById('output');
+  const preview = document.getElementById('colorPreview');
+
+  let hexCode = hex;
+  if (hexCode.charAt(0) === '#') {
+    hexCode = hexCode.substring(1);
+  }
+
+  if (hexCode.length === 3) {
+    hexCode = hexCode.split('').map(c => c + c).join('');
+  }
+
+  if (!/^([0-9A-Fa-f]{6})$/.test(hexCode)) {
+    output.textContent = 'Invalid HEX code.';
+    preview.style.backgroundColor = 'transparent';
+    return;
+  }
+
+  const r = parseInt(hexCode.substring(0, 2), 16);
+  const g = parseInt(hexCode.substring(2, 4), 16);
+  const b = parseInt(hexCode.substring(4, 6), 16);
+
+  const rgbString = `rgb(${r}, ${g}, ${b})`;
+  output.textContent = `HEX: #${hexCode.toUpperCase()} | RGB: ${rgbString}`;
+  preview.style.backgroundColor = `#${hexCode}`;
+  preview.style.boxShadow = `0 5px 15px rgba(${r}, ${g}, ${b}, 0.3)`;
+}
+
+function clearFields() {
+  document.getElementById('hexInput').value = '';
+  document.getElementById('output').textContent = '';
+  const preview = document.getElementById('colorPreview');
+  preview.style.backgroundColor = 'transparent';
+  preview.style.boxShadow = '0 5px 15px rgba(255, 105, 180, 0.3)';
+}
+
+function copyOutput() {
+  const outputText = document.getElementById('output').textContent;
+  if (!outputText) return;
+
+  navigator.clipboard.writeText(outputText).then(() => {
+    alert('Output copied to clipboard!');
+  }).catch(() => {
+    alert('Failed to copy output.');
+  });
+}
+</script>
+</body>
+</html>
