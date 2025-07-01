@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Color Picker from Image</title>
+<style>
+  body {
+    background: linear-gradient(135deg, #ff00aa, #ff0000);
+    font-family: "Segoe UI", sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    min-height: 100vh;
+    margin: 0;
+    color: #333;
+  }
+  .container {
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 1rem;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+    padding: 1.5rem;
+    max-width: 400px;
+    width: 90%;
+    text-align: center;
+    backdrop-filter: blur(5px);
+  }
+  .container h2 {
+    color: #ff0066;
+    margin-bottom: 1rem;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+  }
+  canvas {
+    border: 2px solid #ff0066;
+    border-radius: 0.5rem;
+    max-width: 100%;
+    cursor: crosshair;
+    margin-bottom: 1rem;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  }
+  input[type="file"] {
+    margin-bottom: 1rem;
+    background: #ff0066;
+    color: white;
+    padding: 0.5rem;
+    border-radius: 0.5rem;
+    border: none;
+    cursor: pointer;
+  }
+  input[type="file"]::-webkit-file-upload-button {
+    visibility: hidden;
+  }
+  .color-preview {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    margin: 0.5rem auto;
+    border: 3px solid #ff0066;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    transition: transform 0.3s;
+  }
+  .color-preview:hover {
+    transform: scale(1.1);
+  }
+  .codes {
+    font-size: 0.9rem;
+    word-break: break-all;
+    margin: 0.5rem 0;
+    padding: 0.5rem;
+    background: rgba(255,255,255,0.7);
+    border-radius: 0.5rem;
+  }
+  button {
+    background: #ff0066;
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    margin: 0.25rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-weight: bold;
+  }
+  button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    background: #ff0055;
+  }
+  @media(max-width:500px){
+    .container {
+      padding: 1rem;
+    }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <h2>Color Picker from Image</h2>
+  <input type="file" id="imageLoader" accept="image/*" />
+  <canvas id="imageCanvas"></canvas>
+  <div class="color-preview" id="colorPreview"></div>
+  <div class="codes" id="hexCode">HEX: #ffffff</div>
+  <div class="codes" id="rgbCode">RGB: rgb(255,255,255)</div>
+  <div class="codes" id="hslCode">HSL: hsl(0, 0%, 100%)</div>
+  <button id="copyBtn">Copy Codes</button>
+  <button id="resetBtn">Clear</button>
+</div>
+<script>
+const imageLoader = document.getElementById('imageLoader');
+const imageCanvas = document.getElementById('imageCanvas');
+const ctx = imageCanvas.getContext('2d');
+const colorPreview = document.getElementById('colorPreview');
+const hexCode = document.getElementById('hexCode');
+const rgbCode = document.getElementById('rgbCode');
+const hslCode = document.getElementById('hslCode');
+const copyBtn = document.getElementById('copyBtn');
+const resetBtn = document.getElementById('resetBtn');
+
+imageLoader.addEventListener('change', function(e) {
+  const reader = new FileReader();
+  reader.onload = function(event) {
+    const img = new Image();
+    img.onload = function() {
+      imageCanvas.width = Math.min(img.width, 400);
+      imageCanvas.height = (img.height * imageCanvas.width) / img.width;
+      ctx.drawImage(img, 0, 0, imageCanvas.width, imageCanvas.height);
+    }
+    img.src = event.target.result;
+  }
+  reader.readAsDataURL(e.target.files[0]);
+});
+
+imageCanvas.addEventListener('click', function(e) {
+  const rect = imageCanvas.getBoundingClientRect();
+  const x = e.clientX - rect.left;
+  const y = e.clientY - rect.top;
+  const pixel = ctx.getImageData(x, y, 1, 1).data;
+  const r = pixel[0], g = pixel[1], b = pixel[2];
+  const hex = rgbToHex(r, g, b);
+  const hsl = rgbToHsl(r, g, b);
+  colorPreview.style.background = hex;
+  hexCode.textContent = `HEX: ${hex}`;
+  rgbCode.textContent = `RGB: rgb(${r}, ${g}, ${b})`;
+  hslCode.textContent = `HSL: ${hsl}`;
+});
+
+copyBtn.addEventListener('click', function() {
+  const text = `${hexCode.textContent}\n${rgbCode.textContent}\n${hslCode.textContent}`;
+  navigator.clipboard.writeText(text);
+  copyBtn.textContent = 'Copied!';
+  setTimeout(() => copyBtn.textContent = 'Copy Codes', 1500);
+});
+
+resetBtn.addEventListener('click', function() {
+  ctx.clearRect(0, 0, imageCanvas.width, imageCanvas.height);
+  colorPreview.style.background = '#ffffff';
+  hexCode.textContent = 'HEX: #ffffff';
+  rgbCode.textContent = 'RGB: rgb(255,255,255)';
+  hslCode.textContent = 'HSL: hsl(0, 0%, 100%)';
+  imageLoader.value = '';
+});
+
+function rgbToHex(r, g, b) {
+  return "#" + [r, g, b].map(x => {
+    const hex = x.toString(16);
+    return hex.length === 1 ? '0' + hex : hex;
+  }).join('');
+}
+
+function rgbToHsl(r, g, b) {
+  r /= 255; g /= 255; b /= 255;
+  const max = Math.max(r, g, b), min = Math.min(r, g, b);
+  let h, s, l = (max + min) / 2;
+  if (max === min) {
+    h = s = 0;
+  } else {
+    const d = max - min;
+    s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+    switch(max) {
+      case r: h = (g - b) / d + (g < b ? 6 : 0); break;
+      case g: h = (b - r) / d + 2; break;
+      case b: h = (r - g) / d + 4; break;
+    }
+    h /= 6;
+  }
+  return `hsl(${Math.round(h * 360)}, ${Math.round(s * 100)}%, ${Math.round(l * 100)}%)`;
+}
+</script>
+</body>
+</html>
