@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Regex Tester</title>
+    <style>
+        body {
+            background: linear-gradient(to bottom, #1a2a6c, #b21f1f, #fdbb2d);
+            font-family: 'Segoe UI', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-attachment: fixed;
+        }
+        .container {
+            background: rgba(255, 255, 255, 0.85);
+            padding: 25px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            width: 90%;
+            max-width: 500px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(253, 187, 45, 0.3);
+        }
+        textarea, input {
+            width: 100%;
+            padding: 12px;
+            border-radius: 12px;
+            border: 1px solid #fdbb2d;
+            font-size: 1em;
+            background: rgba(255, 255, 255, 0.8);
+            transition: all 0.3s;
+        }
+        textarea:focus, input:focus {
+            outline: none;
+            border-color: #b21f1f;
+            box-shadow: 0 0 8px rgba(178, 31, 31, 0.2);
+        }
+        button {
+            background: linear-gradient(to right, #b21f1f, #fdbb2d);
+            border: none;
+            color: white;
+            padding: 12px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: bold;
+            transition: all 0.3s;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+            background: linear-gradient(to right, #9e1b1b, #e6a923);
+        }
+        .output {
+            white-space: pre-wrap;
+            background: rgba(255, 248, 240, 0.9);
+            padding: 15px;
+            border-radius: 12px;
+            border: 1px solid #fdbb2d;
+            max-height: 200px;
+            overflow-y: auto;
+            color: #333;
+            line-height: 1.5;
+        }
+        h2 {
+            text-align: center;
+            color: #b21f1f;
+            margin: 0 0 10px 0;
+            font-size: 1.8em;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+        }
+        .button-group {
+            display: flex;
+            gap: 10px;
+        }
+        .button-group button {
+            flex: 1;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2> Regex Tester</h2>
+        <input type="text" id="regex" placeholder="Enter your regex pattern (e.g., (\\w+))" />
+        <textarea id="testText" rows="5" placeholder="Enter text to test against your regex..."></textarea>
+        <div class="button-group">
+            <button onclick="testRegex()">Test Pattern</button>
+            <button onclick="clearFields()">Clear</button>
+            <button onclick="copyOutput()">Copy</button>
+        </div>
+        <div class="output" id="output">Matches and groups will appear here...</div>
+    </div>
+
+    <script>
+        function testRegex() {
+            const regexInput = document.getElementById('regex').value;
+            const testText = document.getElementById('testText').value;
+            const output = document.getElementById('output');
+            
+            // Add sunset river animation effect
+            document.body.style.background = 
+                `linear-gradient(to bottom, #1a2a6c, #b21f1f, #fdbb2d)`;
+            
+            try {
+                const regex = new RegExp(regexInput, 'g');
+                const matches = [];
+                let match;
+                while ((match = regex.exec(testText)) !== null) {
+                    matches.push(`🌅 Match: ${match[0]} at index ${match.index}`);
+                    if (match.length > 1) {
+                        match.slice(1).forEach((group, idx) => {
+                            matches.push(`  🌊 Group ${idx + 1}: ${group}`);
+                        });
+                    }
+                }
+                if (matches.length === 0) {
+                    output.textContent = 'No matches found in the river of text...';
+                } else {
+                    output.textContent = matches.join('\n');
+                }
+            } catch (e) {
+                output.textContent = `🌄 Regex Error: ${e.message}`;
+            }
+        }
+
+        function clearFields() {
+            document.getElementById('regex').value = '';
+            document.getElementById('testText').value = '';
+            document.getElementById('output').textContent = 'Matches and groups will appear here...';
+        }
+
+        function copyOutput() {
+            const outputText = document.getElementById('output').textContent;
+            navigator.clipboard.writeText(outputText).then(() => {
+                const output = document.getElementById('output');
+                const originalText = output.textContent;
+                output.textContent = '🌇 Results copied to clipboard!';
+                setTimeout(() => {
+                    output.textContent = originalText;
+                }, 1500);
+            });
+        }
+    </script>
+</body>
+</html>
