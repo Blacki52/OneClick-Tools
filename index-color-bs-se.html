@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Color Blindness Simulator</title>
+<style>
+  body {
+    font-family: 'Segoe UI', sans-serif;
+    background: linear-gradient(to bottom, #ffffff, #e0f0ff);
+    color: #007bff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 20px;
+  }
+  h1 {
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+  }
+  .container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    width: 100%;
+    max-width: 800px;
+  }
+  canvas {
+    width: 100%;
+    border-radius: 12px;
+    box-shadow: 0 8px 20px rgba(0, 123, 255, 0.2);
+    background: white;
+  }
+  input[type='file'], select, button {
+    margin: 10px 0;
+    padding: 10px;
+    border: 2px solid #007bff;
+    border-radius: 8px;
+    background: #ffffff;
+    color: #007bff;
+    cursor: pointer;
+    font-size: 1rem;
+  }
+  button:hover {
+    background: #007bff;
+    color: #ffffff;
+  }
+  @media (max-width: 600px) {
+    .container {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+</head>
+<body>
+<h1>🎨 Color Blindness Simulator</h1>
+<input type="file" id="imageUpload" accept="image/*" />
+<select id="typeSelect">
+  <option value="deuteranopia">Deuteranopia</option>
+  <option value="protanopia">Protanopia</option>
+  <option value="tritanopia">Tritanopia</option>
+</select>
+<button id="simulateButton">Simulate</button>
+<button id="resetButton">Reset</button>
+<div class="container">
+  <canvas id="originalCanvas"></canvas>
+  <canvas id="simulatedCanvas"></canvas>
+</div>
+<script>
+const imageUpload = document.getElementById('imageUpload');
+const typeSelect = document.getElementById('typeSelect');
+const simulateButton = document.getElementById('simulateButton');
+const resetButton = document.getElementById('resetButton');
+const originalCanvas = document.getElementById('originalCanvas');
+const simulatedCanvas = document.getElementById('simulatedCanvas');
+const originalCtx = originalCanvas.getContext('2d');
+const simulatedCtx = simulatedCanvas.getContext('2d');
+let uploadedImage = null;
+
+imageUpload.addEventListener('change', (e) => {
+  const file = e.target.files[0];
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const img = new Image();
+      img.onload = () => {
+        originalCanvas.width = img.width;
+        originalCanvas.height = img.height;
+        simulatedCanvas.width = img.width;
+        simulatedCanvas.height = img.height;
+        originalCtx.drawImage(img, 0, 0);
+        simulatedCtx.drawImage(img, 0, 0);
+        uploadedImage = img;
+      };
+      img.src = event.target.result;
+    };
+    reader.readAsDataURL(file);
+  }
+});
+
+simulateButton.addEventListener('click', () => {
+  if (!uploadedImage) return alert('Please upload an image first.');
+  const type = typeSelect.value;
+  simulatedCtx.drawImage(uploadedImage, 0, 0);
+  const imageData = simulatedCtx.getImageData(0, 0, simulatedCanvas.width, simulatedCanvas.height);
+  const data = imageData.data;
+  for (let i = 0; i < data.length; i += 4) {
+    let r = data[i];
+    let g = data[i + 1];
+    let b = data[i + 2];
+    if (type === 'deuteranopia') {
+      let newR = 0.625 * r + 0.375 * g;
+      let newG = 0.7 * g + 0.3 * r;
+      data[i] = newR;
+      data[i + 1] = newG;
+    } else if (type === 'protanopia') {
+      let newR = 0.567 * r + 0.433 * g;
+      let newG = 0.558 * g + 0.442 * r;
+      data[i] = newR;
+      data[i + 1] = newG;
+    } else if (type === 'tritanopia') {
+      let newG = 0.95 * g + 0.05 * b;
+      let newB = 0.433 * b + 0.567 * g;
+      data[i + 1] = newG;
+      data[i + 2] = newB;
+    }
+  }
+  simulatedCtx.putImageData(imageData, 0, 0);
+});
+
+resetButton.addEventListener('click', () => {
+  if (!uploadedImage) return;
+  originalCtx.clearRect(0, 0, originalCanvas.width, originalCanvas.height);
+  simulatedCtx.clearRect(0, 0, simulatedCanvas.width, simulatedCanvas.height);
+  originalCtx.drawImage(uploadedImage, 0, 0);
+  simulatedCtx.drawImage(uploadedImage, 0, 0);
+});
+</script>
+</body>
+</html>
