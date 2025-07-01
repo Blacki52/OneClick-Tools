@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Rade Combine Caller - Text Shortener</title>
+<style>
+  body {
+    font-family: 'Segoe UI', sans-serif;
+    background: linear-gradient(135deg, #ff00aa, #ff66cc);
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    margin: 0;
+    padding: 20px;
+  }
+  .container {
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    padding: 20px;
+    max-width: 500px;
+    width: 100%;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+  }
+  h1 {
+    text-align: center;
+    font-size: 1.8rem;
+    margin-bottom: 20px;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+    color: #fff;
+  }
+  textarea {
+    width: 100%;
+    border: none;
+    border-radius: 10px;
+    padding: 12px;
+    resize: vertical;
+    font-size: 1rem;
+    margin-bottom: 12px;
+    box-shadow: inset 2px 2px 5px rgba(0,0,0,0.1);
+    background: rgba(255, 255, 255, 0.9);
+    color: #333;
+  }
+  button {
+    width: 100%;
+    background: #ff1493;
+    border: none;
+    border-radius: 10px;
+    padding: 12px;
+    font-size: 1rem;
+    color: #fff;
+    cursor: pointer;
+    margin-bottom: 10px;
+    transition: all 0.3s;
+    font-weight: bold;
+  }
+  button:hover {
+    background: #d8117d;
+    transform: translateY(-2px);
+  }
+  #output {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 10px;
+    padding: 12px;
+    min-height: 80px;
+    font-size: 1rem;
+    color: #fff;
+    box-shadow: inset 2px 2px 5px rgba(0,0,0,0.1);
+    margin-bottom: 10px;
+    overflow-wrap: break-word;
+  }
+  .btn-group {
+    display: flex;
+    gap: 10px;
+  }
+  .btn-group button {
+    flex: 1;
+  }
+  .logo {
+    text-align: center;
+    margin-bottom: 10px;
+    font-size: 2rem;
+    font-weight: bold;
+  }
+</style>
+</head>
+<body>
+  <div class="container">
+    <div class="logo">Rade Combine Caller</div>
+    <h1>✨ Text Compression Tool</h1>
+    <textarea id="inputText" rows="6" placeholder="Paste or type your long text here..."></textarea>
+    <button id="shortenBtn">Shorten Text</button>
+    <div id="output" placeholder="Shortened text will appear here..."></div>
+    <div class="btn-group">
+      <button id="copyBtn">Copy Output</button>
+      <button id="clearBtn">Clear All</button>
+    </div>
+  </div>
+
+<script>
+// Improved summarization logic that keeps important sentences
+function shortenText(text) {
+  // First try to split into sentences
+  const sentences = text.match(/[^.!?]+[.!?]+/g) || [text];
+  
+  // If we have multiple sentences, keep the first and last (often most important)
+  if (sentences.length > 1) {
+    const importantSentences = [
+      sentences[0], 
+      sentences[sentences.length - 1]
+    ].filter(s => s.trim().length > 0);
+    
+    return importantSentences.join(' ') + 
+      (text.length > 200 ? '...' : '');
+  }
+  
+  // For single-sentence text, just truncate
+  return text.slice(0, 200) + (text.length > 200 ? '...' : '');
+}
+
+document.getElementById('shortenBtn').addEventListener('click', () => {
+  const input = document.getElementById('inputText').value.trim();
+  if (input.length === 0) {
+    alert('Please enter text to shorten.');
+    return;
+  }
+  const shortened = shortenText(input);
+  document.getElementById('output').innerText = shortened;
+});
+
+document.getElementById('clearBtn').addEventListener('click', () => {
+  document.getElementById('inputText').value = '';
+  document.getElementById('output').innerText = '';
+});
+
+document.getElementById('copyBtn').addEventListener('click', () => {
+  const output = document.getElementById('output').innerText;
+  if (output.trim() === '') {
+    alert('Nothing to copy.');
+    return;
+  }
+  navigator.clipboard.writeText(output).then(() => {
+    const copyBtn = document.getElementById('copyBtn');
+    copyBtn.textContent = 'Copied!';
+    copyBtn.style.background = '#4CAF50';
+    setTimeout(() => {
+      copyBtn.textContent = 'Copy Output';
+      copyBtn.style.background = '#ff1493';
+    }, 2000);
+  }).catch(() => {
+    alert('Failed to copy to clipboard.');
+  });
+});
+</script>
+</body>
+</html>
