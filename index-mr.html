@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>HTML Minifier Tool</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: linear-gradient(to bottom right, #00bfff, #ffffff);
+            color: #222;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        h1 {
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+            color: #0066cc;
+        }
+        .container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            width: 100%;
+            max-width: 800px;
+        }
+        textarea {
+            width: 100%;
+            min-height: 200px;
+            padding: 10px;
+            border: 2px solid #00bfff;
+            border-radius: 12px;
+            font-family: monospace;
+            font-size: 0.9rem;
+            resize: vertical;
+            box-shadow: 0 8px 20px rgba(0, 191, 255, 0.2);
+            transition: transform 0.3s;
+        }
+        textarea:focus {
+            outline: none;
+            transform: scale(1.02);
+            border-color: #0066cc;
+        }
+        .buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        button {
+            flex: 1;
+            background: #00bfff;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 12px;
+            font-size: 1rem;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0, 191, 255, 0.4);
+            transition: background 0.3s, transform 0.2s;
+        }
+        button:hover {
+            background: #0066cc;
+            transform: translateY(-2px);
+        }
+        button:active {
+            transform: translateY(0);
+        }
+        @media (max-width: 600px) {
+            .buttons {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>HTML Minifier Tool</h1>
+    <div class="container">
+        <label for="inputHTML">Original HTML:</label>
+        <textarea id="inputHTML" placeholder="Paste your HTML here..."></textarea>
+
+        <div class="buttons">
+            <button id="minifyBtn">Minify</button>
+            <button id="clearBtn">Clear</button>
+            <button id="copyBtn">Copy Output</button>
+        </div>
+
+        <label for="outputHTML">Minified HTML:</label>
+        <textarea id="outputHTML" placeholder="Minified HTML will appear here..." readonly></textarea>
+    </div>
+
+    <script>
+        const inputHTML = document.getElementById('inputHTML');
+        const outputHTML = document.getElementById('outputHTML');
+        const minifyBtn = document.getElementById('minifyBtn');
+        const clearBtn = document.getElementById('clearBtn');
+        const copyBtn = document.getElementById('copyBtn');
+
+        function minifyHTML(html) {
+            return html
+                .replace(/<!--[^]*?-->/g, '') // Remove comments
+                .replace(/\s{2,}/g, ' ')      // Collapse multiple spaces
+                .replace(/\n/g, '')           // Remove line breaks
+                .replace(/>\s+</g, '><')      // Remove spaces between tags
+                .trim();
+        }
+
+        minifyBtn.addEventListener('click', () => {
+            const input = inputHTML.value;
+            if (input.trim() === '') {
+                alert('Please paste HTML code to minify.');
+                return;
+            }
+            const minified = minifyHTML(input);
+            outputHTML.value = minified;
+        });
+
+        clearBtn.addEventListener('click', () => {
+            inputHTML.value = '';
+            outputHTML.value = '';
+        });
+
+        copyBtn.addEventListener('click', async () => {
+            if (outputHTML.value.trim() === '') {
+                alert('There is nothing to copy.');
+                return;
+            }
+            try {
+                await navigator.clipboard.writeText(outputHTML.value);
+                alert('Minified HTML copied to clipboard!');
+            } catch (err) {
+                alert('Failed to copy. Please try manually.');
+            }
+        });
+    </script>
+</body>
+</html>
