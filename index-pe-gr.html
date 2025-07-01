@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Palette Generator</title>
+<style>
+    body {
+        font-family: 'Segoe UI', sans-serif;
+        background: linear-gradient(135deg, #00aaff, #ffffff);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-start;
+        min-height: 100vh;
+        padding: 20px;
+    }
+    .container {
+        background: white;
+        padding: 20px;
+        border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        max-width: 400px;
+        width: 100%;
+        text-align: center;
+    }
+    .palette {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        margin-top: 20px;
+    }
+    .swatch {
+        width: 60px;
+        height: 60px;
+        margin: 5px;
+        border-radius: 12px;
+        cursor: pointer;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        transition: transform 0.2s;
+    }
+    .swatch:hover {
+        transform: scale(1.1);
+    }
+    input, select, button {
+        margin: 10px 0;
+        padding: 10px;
+        border-radius: 10px;
+        border: 2px solid #00aaff;
+        width: 100%;
+        font-size: 1rem;
+    }
+    button {
+        background: #00aaff;
+        color: white;
+        cursor: pointer;
+        transition: background 0.3s;
+    }
+    button:hover {
+        background: #0077aa;
+    }
+</style>
+</head>
+<body>
+    <div class="container">
+        <h2>🎨 Palette Generator</h2>
+        <input type="text" id="baseColor" placeholder="Enter base color (HEX, RGB, HSL)" />
+        <select id="paletteType">
+            <option value="analogous">Analogous</option>
+            <option value="triadic">Triadic</option>
+            <option value="monochromatic">Monochromatic</option>
+            <option value="radiantPink">Radiant Pink</option>
+        </select>
+        <input type="number" id="paletteSize" placeholder="Palette size (3-10)" min="3" max="10" value="5" />
+        <button onclick="generatePalette()">Generate Palette</button>
+        <div class="palette" id="palette"></div>
+    </div>
+
+<script>
+function generatePalette() {
+    const baseColor = document.getElementById('baseColor').value;
+    const paletteType = document.getElementById('paletteType').value;
+    const paletteSize = parseInt(document.getElementById('paletteSize').value);
+    const paletteContainer = document.getElementById('palette');
+    paletteContainer.innerHTML = '';
+
+    let base = tinycolor(baseColor);
+    let colors = [];
+
+    if (!base.isValid()) {
+        alert('Invalid color format. Please enter a valid HEX, RGB, or HSL color.');
+        return;
+    }
+
+    switch (paletteType) {
+        case 'analogous':
+            colors = base.analogous(paletteSize);
+            break;
+        case 'triadic':
+            colors = base.triad();
+            while (colors.length < paletteSize) {
+                colors = colors.concat(colors);
+            }
+            colors = colors.slice(0, paletteSize);
+            break;
+        case 'monochromatic':
+            colors = base.monochromatic(paletteSize);
+            break;
+        case 'radiantPink':
+            // Create a mix of radiant colors and pinks
+            const baseHsl = base.toHsl();
+            const radiantHue = baseHsl.h;
+            const pinkHue = 340; // Standard pink hue
+            
+            // Alternate between radiant colors and pinks
+            for (let i = 0; i < paletteSize; i++) {
+                if (i % 2 === 0) {
+                    // Radiant color (bright and saturated)
+                    colors.push(tinycolor({
+                        h: radiantHue,
+                        s: 100,
+                        l: 50 + (i * 5) % 30
+                    }));
+                } else {
+                    // Pink color
+                    colors.push(tinycolor({
+                        h: pinkHue + (i * 10) % 20, // Slight variation in pink hues
+                        s: 80 + (i * 3) % 20,
+                        l: 70 + (i * 2) % 20
+                    }));
+                }
+            }
+            break;
+    }
+
+    colors.forEach(color => {
+        const hex = color.toHexString();
+        const swatch = document.createElement('div');
+        swatch.className = 'swatch';
+        swatch.style.background = hex;
+        swatch.title = hex;
+        swatch.onclick = () => {
+            navigator.clipboard.writeText(hex);
+            alert(`Copied ${hex} to clipboard`);
+        };
+        paletteContainer.appendChild(swatch);
+    });
+}
+
+// TinyColor Library (minified)
+!function(t){function n(t){return new s(t)}function s(t){this._tc=t}t.tinycolor=n,s.prototype={analogous:function(t,n){t=t||6,n=n||30;for(var s=this._tc,o=s.toHsl(),a=o.h,u=[s],c=1;t>c;c++)u.push(n.tinycolor({h:(a+n*c)%360,s:o.s,l:o.l}));return u},triad:function(){var t=this._tc.toHsl(),n=[this._tc];return n.push(tinycolor({h:(t.h+120)%360,s:t.s,l:t.l})),n.push(tinycolor({h:(t.h+240)%360,s:t.s,l:t.l})),n},monochromatic:function(t){t=t||6;for(var n=this._tc,s=n.toHsl(),o=[],a=1;t>=a;a++)o.push(tinycolor({h:s.h,s:s.s,l:Math.min(1,s.l*a/t)}));return o},toHexString:function(){return this._tc.toHexString()},isValid:function(){return this._tc.isValid()}};t.tinycolor=n}(window);
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tinycolor/1.4.2/tinycolor.min.js"></script>
+</body>
+</html>
