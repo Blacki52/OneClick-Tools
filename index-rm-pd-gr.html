@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Random Password Generator</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #00bfff, #ffffff);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 20px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+            text-align: center;
+            max-width: 320px;
+            width: 90%;
+        }
+        h2 {
+            color: #00bfff;
+            margin-bottom: 15px;
+        }
+        .options {
+            text-align: left;
+            margin-bottom: 15px;
+        }
+        .options label {
+            display: block;
+            margin: 5px 0;
+        }
+        input[type="number"] {
+            width: 100%;
+            padding: 8px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            margin-bottom: 10px;
+        }
+        .buttons button {
+            background: #00bfff;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            margin: 5px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .buttons button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 10px rgba(0,0,0,0.2);
+        }
+        #passwordOutput {
+            word-break: break-all;
+            padding: 10px;
+            border: 1px dashed #00bfff;
+            border-radius: 12px;
+            background: #f0faff;
+            margin: 10px 0;
+            font-weight: bold;
+            font-size: 16px;
+        }
+        @media(max-width: 500px) {
+            .container {
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Password Generator</h2>
+        <input type="number" id="length" placeholder="Password Length (e.g., 12)" min="4" max="64" />
+        <div class="options">
+            <label><input type="checkbox" id="uppercase" checked /> Include Uppercase Letters</label>
+            <label><input type="checkbox" id="lowercase" checked /> Include Lowercase Letters</label>
+            <label><input type="checkbox" id="numbers" checked /> Include Numbers</label>
+            <label><input type="checkbox" id="symbols" checked /> Include Special Characters</label>
+        </div>
+        <div id="passwordOutput">Your generated password will appear here</div>
+        <div class="buttons">
+            <button onclick="generatePassword()">Generate</button>
+            <button onclick="copyPassword()">Copy</button>
+            <button onclick="clearFields()">Clear</button>
+        </div>
+    </div>
+    <script>
+        function generatePassword() {
+            const length = parseInt(document.getElementById('length').value) || 12;
+            const includeUppercase = document.getElementById('uppercase').checked;
+            const includeLowercase = document.getElementById('lowercase').checked;
+            const includeNumbers = document.getElementById('numbers').checked;
+            const includeSymbols = document.getElementById('symbols').checked;
+
+            const uppercaseChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+            const lowercaseChars = "abcdefghijklmnopqrstuvwxyz";
+            const numberChars = "0123456789";
+            const symbolChars = "!@#$%^&*()_+-=[]{}|;:,.<>?";
+
+            let allChars = "";
+            if (includeUppercase) allChars += uppercaseChars;
+            if (includeLowercase) allChars += lowercaseChars;
+            if (includeNumbers) allChars += numberChars;
+            if (includeSymbols) allChars += symbolChars;
+
+            if (allChars.length === 0) {
+                alert("Please select at least one character type.");
+                return;
+            }
+
+            let password = "";
+            for (let i = 0; i < length; i++) {
+                const randomIndex = Math.floor(Math.random() * allChars.length);
+                password += allChars[randomIndex];
+            }
+
+            document.getElementById('passwordOutput').innerText = password;
+        }
+
+        function copyPassword() {
+            const password = document.getElementById('passwordOutput').innerText;
+            if (password && password !== 'Your generated password will appear here') {
+                navigator.clipboard.writeText(password).then(() => {
+                    alert('Password copied to clipboard!');
+                });
+            } else {
+                alert('No password to copy. Please generate one first.');
+            }
+        }
+
+        function clearFields() {
+            document.getElementById('length').value = '';
+            document.getElementById('uppercase').checked = true;
+            document.getElementById('lowercase').checked = true;
+            document.getElementById('numbers').checked = true;
+            document.getElementById('symbols').checked = true;
+            document.getElementById('passwordOutput').innerText = 'Your generated password will appear here';
+        }
+    </script>
+</body>
+</html>
