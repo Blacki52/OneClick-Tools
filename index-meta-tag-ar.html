@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Meta Tag Analyzer</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #ff1493, #ff69b4);
+            color: #333;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+        .container {
+            background: #fff;
+            padding: 2rem;
+            border-radius: 1rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            width: 90%;
+            max-width: 600px;
+        }
+        h1 {
+            color: #ff1493;
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+        input[type="text"] {
+            width: 100%;
+            padding: 0.5rem;
+            margin-bottom: 1rem;
+            border-radius: 0.5rem;
+            border: 1px solid #ff1493;
+            font-size: 1rem;
+        }
+        button {
+            background: #ff1493;
+            color: #fff;
+            border: none;
+            padding: 0.7rem 1rem;
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        button:hover {
+            background: #d1006a;
+        }
+        .result {
+            margin-top: 1rem;
+            background: #fff0f5;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            overflow-x: auto;
+        }
+        .tag {
+            margin-bottom: 0.8rem;
+        }
+        .tag strong {
+            color: #ff1493;
+        }
+        pre {
+            background: #ffe6ee;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            overflow-x: auto;
+        }
+        ul li {
+            color: #d1006a;
+        }
+        @media (max-width: 600px) {
+            .container {
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Meta Tag Analyzer</h1>
+        <input type="text" id="urlInput" placeholder="Enter URL to analyze meta tags" />
+        <button id="analyzeBtn">Analyze</button>
+        <div id="result" class="result"></div>
+    </div>
+
+    <script>
+        const analyzeBtn = document.getElementById('analyzeBtn');
+        const resultDiv = document.getElementById('result');
+
+        analyzeBtn.addEventListener('click', async () => {
+            const url = document.getElementById('urlInput').value;
+            if (!url) {
+                alert('Please enter a URL.');
+                return;
+            }
+
+            resultDiv.innerHTML = 'Analyzing...';
+            try {
+                const response = await fetch(`https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`);
+                const htmlText = await response.text();
+
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(htmlText, 'text/html');
+                const metaTags = doc.getElementsByTagName('meta');
+                const title = doc.querySelector('title') ? doc.querySelector('title').innerText : 'N/A';
+                let description = 'N/A';
+                let keywords = 'N/A';
+
+                for (let tag of metaTags) {
+                    if (tag.getAttribute('name') === 'description') {
+                        description = tag.getAttribute('content');
+                    }
+                    if (tag.getAttribute('name') === 'keywords') {
+                        keywords = tag.getAttribute('content');
+                    }
+                }
+
+                const titleLength = title.length;
+                const descriptionLength = description.length;
+                const keywordsLength = keywords.length;
+
+                const seoSuggestions = [];
+                if (titleLength < 50 || titleLength > 60) {
+                    seoSuggestions.push('⚠️ Title length should ideally be 50-60 characters.');
+                }
+                if (descriptionLength < 150 || descriptionLength > 160) {
+                    seoSuggestions.push('⚠️ Meta description length should ideally be 150-160 characters.');
+                }
+                if (keywords === 'N/A' || keywordsLength < 5) {
+                    seoSuggestions.push('⚠️ Add relevant meta keywords for better SEO.');
+                }
+
+                resultDiv.innerHTML = `
+                    <div class="tag"><strong>Title:</strong> ${title} (${titleLength} characters)</div>
+                    <div class="tag"><strong>Description:</strong> ${description} (${descriptionLength} characters)</div>
+                    <div class="tag"><strong>Keywords:</strong> ${keywords} (${keywordsLength} characters)</div>
+                    <h3>SEO Suggestions:</h3>
+                    <ul>${seoSuggestions.length ? seoSuggestions.map(s => `<li>${s}</li>`).join('') : '<li>✅ All meta tags look good for SEO.</li>'}</ul>
+                    <h3>Full Meta Tags HTML:</h3>
+                    <pre>${htmlText.match(/<meta[^>]*>/gi)?.join('\n') || 'No meta tags found.'}</pre>
+                `;
+
+            } catch (error) {
+                resultDiv.innerHTML = `Error fetching or parsing the URL: ${error.message}`;
+            }
+        });
+    </script>
+</body>
+</html>
