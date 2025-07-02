@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Audio Converter</title>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    @keyframes progress {
+      0% { width: 0%; }
+      100% { width: 100%; }
+    }
+    .progress-bar {
+      animation: progress 3s ease-in-out infinite;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-red-500 to-orange-500 p-4">
+  <div class="w-full max-w-md p-6 rounded-2xl shadow-2xl bg-white/90 backdrop-blur-sm">
+    <div class="flex flex-col items-center gap-4">
+      <div class="text-center">
+        <h1 class="text-2xl font-bold text-red-600 mb-1">Audio Converter</h1>
+        <p class="text-sm text-orange-600">Convert your audio files to any format</p>
+      </div>
+
+      <div class="w-full">
+        <label id="drop-area" class="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-orange-300 rounded-xl cursor-pointer bg-orange-50 hover:bg-orange-100 transition">
+          <div class="flex flex-col items-center justify-center pt-5 pb-6">
+            <i data-lucide="upload-cloud" class="w-8 h-8 mb-3 text-orange-500"></i>
+            <p id="file-info" class="text-sm text-orange-600">
+              <span class="font-medium">Click to upload</span> or drag and drop
+            </p>
+            <p class="text-xs text-orange-400 mt-1">Supports MP3, WAV, OGG, etc.</p>
+          </div>
+          <input type="file" id="file-input" accept="audio/*" class="hidden">
+        </label>
+      </div>
+
+      <div id="error-message" class="hidden w-full flex items-center gap-2 p-2 bg-red-100 text-red-600 rounded-md">
+        <i data-lucide="x" class="w-4 h-4"></i>
+        <span class="text-sm" id="error-text"></span>
+      </div>
+
+      <div class="w-full space-y-2">
+        <label class="block text-sm font-medium text-orange-700">Output Format</label>
+        <select id="format-select" class="w-full border border-orange-300 rounded-lg p-2 bg-white text-orange-800 focus:ring-2 focus:ring-orange-500 focus:border-orange-500">
+          <option value="mp3">MP3</option>
+          <option value="wav">WAV</option>
+          <option value="ogg">OGG</option>
+          <option value="aac">AAC</option>
+          <option value="flac">FLAC</option>
+        </select>
+      </div>
+
+      <div class="w-full flex gap-2">
+        <button id="convert-btn" class="w-full bg-orange-600 hover:bg-orange-700 text-white py-2 px-4 rounded-lg transition-colors disabled:opacity-50">
+          Convert Audio
+        </button>
+        <button id="reset-btn" class="hidden text-orange-600 border border-orange-600 hover:bg-orange-50 py-2 px-4 rounded-lg">
+          Reset
+        </button>
+      </div>
+
+      <div id="progress-container" class="hidden w-full space-y-1">
+        <div class="flex justify-between text-xs text-orange-600">
+          <span>Converting...</span>
+          <span id="progress-percent">0%</span>
+        </div>
+        <div class="w-full h-2 bg-orange-100 rounded-full overflow-hidden">
+          <div id="progress-bar" class="h-full bg-orange-500 rounded-full" style="width: 0%"></div>
+        </div>
+      </div>
+
+      <div id="result-container" class="hidden w-full mt-4 p-4 border border-green-200 rounded-xl bg-green-50">
+        <div class="flex flex-col items-center gap-3">
+          <div class="flex items-center gap-2 text-green-600">
+            <i data-lucide="check" class="w-5 h-5"></i>
+            <span class="font-medium">Conversion Complete!</span>
+          </div>
+          <div class="text-center">
+            <p id="result-filename" class="text-sm font-medium text-gray-800"></p>
+            <p id="result-details" class="text-xs text-gray-500 mt-1"></p>
+          </div>
+          <div class="flex gap-2">
+            <a id="download-btn" class="flex items-center gap-2 bg-green-600 text-white px-4 py-2 rounded-lg shadow hover:bg-green-700 transition">
+              <i data-lucide="download" class="w-4 h-4"></i> Download
+            </a>
+            <button id="play-btn" class="flex items-center gap-2 text-green-600 border border-green-600 hover:bg-green-50 px-4 py-2 rounded-lg">
+              <i data-lucide="play-circle" class="w-4 h-4"></i> Play
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      lucide.createIcons();
+      
+      const fileInput = document.getElementById('file-input');
+      const dropArea = document.getElementById('drop-area');
+      const fileInfo = document.getElementById('file-info');
+      const formatSelect = document.getElementById('format-select');
+      const convertBtn = document.getElementById('convert-btn');
+      const resetBtn = document.getElementById('reset-btn');
+      const errorMessage = document.getElementById('error-message');
+      const errorText = document.getElementById('error-text');
+      const progressContainer = document.getElementById('progress-container');
+      const progressBar = document.getElementById('progress-bar');
+      const progressPercent = document.getElementById('progress-percent');
+      const resultContainer = document.getElementById('result-container');
+      const resultFilename = document.getElementById('result-filename');
+      const resultDetails = document.getElementById('result-details');
+      const downloadBtn = document.getElementById('download-btn');
+      const playBtn = document.getElementById('play-btn');
+
+      let currentFile = null;
+      let convertedFile = null;
+      let audioElement = null;
+
+      // Handle drag and drop
+      ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+        dropArea.addEventListener(eventName, preventDefaults, false);
+      });
+
+      function preventDefaults(e) {
+        e.preventDefault();
+        e.stopPropagation();
+      }
+
+      ['dragenter', 'dragover'].forEach(eventName => {
+        dropArea.addEventListener(eventName, highlight, false);
+      });
+
+      ['dragleave', 'drop'].forEach(eventName => {
+        dropArea.addEventListener(eventName, unhighlight, false);
+      });
+
+      function highlight() {
+        dropArea.classList.add('border-orange-500', 'bg-orange-200');
+      }
+
+      function unhighlight() {
+        dropArea.classList.remove('border-orange-500', 'bg-orange-200');
+      }
+
+      dropArea.addEventListener('drop', handleDrop, false);
+
+      function handleDrop(e) {
+        const dt = e.dataTransfer;
+        const files = dt.files;
+        if (files.length) {
+          handleFiles(files);
+        }
+      }
+
+      fileInput.addEventListener('change', function() {
+        if (this.files.length) {
+          handleFiles(this.files);
+        }
+      });
+
+      function handleFiles(files) {
+        const file = files[0];
+        
+        // Basic validation
+        if (!file.type.startsWith('audio/')) {
+          showError('Please select an audio file');
+          return;
+        }
+
+        currentFile = file;
+        fileInfo.innerHTML = `<span class="font-medium">${file.name}</span>`;
+        document.querySelector('#drop-area p:nth-child(3)').textContent = `(${(file.size / 1000000).toFixed(2)} MB)`;
+        resetBtn.classList.remove('hidden');
+        errorMessage.classList.add('hidden');
+        resultContainer.classList.add('hidden');
+        
+        // Enable convert button
+        convertBtn.disabled = false;
+      }
+
+      function showError(message) {
+        errorText.textContent = message;
+        errorMessage.classList.remove('hidden');
+      }
+
+      convertBtn.addEventListener('click', function() {
+        if (!currentFile) {
+          showError('Please select a file first');
+          return;
+        }
+
+        // Disable convert button during conversion
+        convertBtn.disabled = true;
+        convertBtn.textContent = 'Converting...';
+        progressContainer.classList.remove('hidden');
+        
+        // Simulate conversion progress
+        let progress = 0;
+        const interval = setInterval(() => {
+          progress += Math.floor(Math.random() * 15) + 5;
+          if (progress >= 100) {
+            progress = 100;
+            clearInterval(interval);
+            conversionComplete();
+          }
+          progressBar.style.width = `${progress}%`;
+          progressPercent.textContent = `${progress}%`;
+        }, 300);
+      });
+
+      function conversionComplete() {
+        // In a real app, you would actually convert the file here
+        // For demo, we're just creating a dummy converted file
+        const format = formatSelect.value;
+        convertedFile = {
+          name: `${currentFile.name.split('.')[0]}.${format}`,
+          url: URL.createObjectURL(currentFile),
+          size: (currentFile.size / 1000000).toFixed(2) + ' MB',
+          format: format.toUpperCase()
+        };
+
+        // Update UI
+        convertBtn.textContent = 'Convert Audio';
+        progressContainer.classList.add('hidden');
+        resultContainer.classList.remove('hidden');
+        resultFilename.textContent = convertedFile.name;
+        resultDetails.textContent = `${convertedFile.size} • ${convertedFile.format}`;
+        downloadBtn.href = convertedFile.url;
+        downloadBtn.download = convertedFile.name;
+        
+        // Enable convert button again
+        convertBtn.disabled = false;
+      }
+
+      resetBtn.addEventListener('click', function() {
+        resetConverter();
+      });
+
+      function resetConverter() {
+        currentFile = null;
+        convertedFile = null;
+        fileInput.value = '';
+        fileInfo.innerHTML = '<span class="font-medium">Click to upload</span> or drag and drop';
+        document.querySelector('#drop-area p:nth-child(3)').textContent = 'Supports MP3, WAV, OGG, etc.';
+        progressBar.style.width = '0%';
+        progressPercent.textContent = '0%';
+        progressContainer.classList.add('hidden');
+        resultContainer.classList.add('hidden');
+        errorMessage.classList.add('hidden');
+        resetBtn.classList.add('hidden');
+        convertBtn.disabled = false;
+        
+        if (audioElement) {
+          audioElement.pause();
+          audioElement = null;
+        }
+      }
+
+      playBtn.addEventListener('click', function() {
+        if (convertedFile && !audioElement) {
+          audioElement = new Audio(convertedFile.url);
+          audioElement.play();
+        } else if (audioElement) {
+          audioElement.pause();
+          audioElement = null;
+        }
+      });
+    });
+  </script>
+</body>
+</html>
