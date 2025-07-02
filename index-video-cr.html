@@ -3,99 +3,16 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Video Converter Tool</title>
+    <title>Video Converter Tool (Fixed)</title>
     <style>
-        body { 
-            font-family: 'Arial', sans-serif; 
-            background: linear-gradient(135deg, #ED1C24 0%, #000000 50%, #FF69B4 100%);
-            display: flex; 
-            justify-content: center; 
-            align-items: center; 
-            min-height: 100vh; 
-            margin: 0;
-            color: #fff;
-        }
-        .container { 
-            background: rgba(0, 0, 0, 0.7); 
-            padding: 30px; 
-            border-radius: 15px; 
-            box-shadow: 0 0 25px rgba(237, 28, 36, 0.5); 
-            width: 90%; 
-            max-width: 450px; 
-            text-align: center;
-            backdrop-filter: blur(5px);
-            border: 1px solid #FF69B4;
-        }
-        h2 {
-            margin-bottom: 25px;
-            color: #fff;
-            text-shadow: 0 0 10px rgba(255, 105, 180, 0.7);
-            font-size: 28px;
-        }
-        input, select { 
-            width: 100%; 
-            margin: 15px 0; 
-            padding: 12px 15px; 
-            border-radius: 8px; 
-            border: 2px solid #ED1C24;
-            background: rgba(0, 0, 0, 0.5);
-            color: white;
-            font-size: 16px;
-        }
-        button { 
-            width: 100%; 
-            padding: 14px; 
-            margin: 20px 0;
-            border-radius: 8px; 
-            background: linear-gradient(45deg, #ED1C24, #FF69B4);
-            color: white; 
-            border: none; 
-            cursor: pointer; 
-            font-weight: bold;
-            font-size: 18px;
-            letter-spacing: 1px;
-            transition: all 0.3s;
-            box-shadow: 0 0 15px rgba(237, 28, 36, 0.5);
-        }
-        button:hover { 
-            background: linear-gradient(45deg, #FF69B4, #ED1C24);
-            transform: translateY(-2px);
-            box-shadow: 0 0 20px rgba(255, 105, 180, 0.7);
-        }
-        video { 
-            width: 100%; 
-            margin-top: 20px; 
-            border-radius: 10px; 
-            background: #000;
-            border: 2px solid #FF69B4;
-            box-shadow: 0 0 15px rgba(255, 105, 180, 0.3);
-        }
-        #output {
-            margin-top: 25px;
-            line-height: 1.6;
-            color: #fff;
-            font-size: 16px;
-        }
-        a {
-            color: #FF69B4;
-            font-weight: bold;
-            text-decoration: none;
-            transition: all 0.3s;
-            display: inline-block;
-            margin: 10px 0;
-            padding: 8px 15px;
-            border-radius: 6px;
-            background: rgba(237, 28, 36, 0.3);
-            border: 1px solid #FF69B4;
-        }
-        a:hover {
-            background: rgba(255, 105, 180, 0.3);
-            text-shadow: 0 0 8px rgba(255, 105, 180, 0.7);
-        }
-        ::placeholder {
-            color: #ccc;
-            opacity: 1;
-        }
+        body { font-family: sans-serif; background: linear-gradient(#ff3366, #ff99cc); display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .container { background: white; padding: 20px; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.2); width: 90%; max-width: 400px; text-align: center; }
+        input, select, button { width: 100%; margin: 8px 0; padding: 10px; border-radius: 8px; border: 1px solid #ccc; }
+        button { background: #ff3366; color: white; border: none; cursor: pointer; }
+        button:hover { background: #e62e5c; }
+        video { width: 100%; margin-top: 10px; border-radius: 8px; }
+        a { color: #ff3366; text-decoration: none; font-weight: bold; }
+        a:hover { text-decoration: underline; }
     </style>
 </head>
 <body>
@@ -106,8 +23,13 @@
             <option value="mp4">MP4</option>
             <option value="webm">WEBM</option>
             <option value="ogg">OGG</option>
+            <option value="avi">AVI</option>
+            <option value="mov">MOV</option>
+            <option value="wmv">WMV</option>
+            <option value="mkv">MKV</option>
+            <option value="flv">FLV</option>
         </select>
-        <button id="convertBtn">CONVERT VIDEO</button>
+        <button id="convertBtn">Convert</button>
         <div id="output"></div>
     </div>
 
@@ -126,20 +48,20 @@
                 return;
             }
 
-            output.innerHTML = '<p>Preparing download...</p>';
+            output.innerHTML = 'Preparing download...';
 
             try {
                 // Instead of reading as ArrayBuffer, use the file directly with a new MIME type note (this does not transcode)
                 const url = URL.createObjectURL(file);
 
                 output.innerHTML = `
-                    <p>Note: This demo changes the file extension but doesn't transcode the video.</p>
-                    <p><a href="${url}" download="converted_video.${format}">Download Video as .${format}</a></p>
+                    <p>Note: This demo does not transcode. It allows download in the original format with renamed extension.</p>
+                    <a href="${url}" download="converted_video.${format}">Download Video as .${format}</a>
                     <video controls src="${url}"></video>
                 `;
             } catch (error) {
                 console.error(error);
-                output.innerHTML = '<p style="color: red;">Error: Could not prepare the video for download. Check console for details.</p>';
+                output.innerHTML = 'Error: Could not prepare the video for download. Check console for details.';
             }
         });
     </script>
