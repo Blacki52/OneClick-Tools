@@ -8,16 +8,20 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
-            --primary: #2563eb;
-            --primary-dark: #1e40af;
-            --primary-light: #93c5fd;
-            --gray-light: #f3f4f6;
-            --gray-dark: #6b7280;
+            --primary: #e91e63; /* Rose pink */
+            --primary-dark: #c2185b; /* Darker rose */
+            --primary-light: #f8bbd0; /* Light pink */
+            --secondary: #ff4081; /* Bright pink */
+            --accent: #ff80ab; /* Soft pink accent */
+            --gray-light: #fce4ec; /* Very light pink */
+            --gray-dark: #880e4f; /* Deep rose */
             --white: #ffffff;
             --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            --shadow-hover: 0 10px 15px rgba(0, 0, 0, 0.1);
+            --shadow-hover: 0 10px 15px rgba(0, 0, 0, 0.2);
             --transition: all 0.3s ease;
-            --rounded: 8px;
+            --rounded: 12px;
+            --3d-effect: 0 10px 20px rgba(0, 0, 0, 0.1), 0 6px 6px rgba(0, 0, 0, 0.1);
+            --3d-effect-hover: 0 15px 25px rgba(0, 0, 0, 0.2), 0 10px 10px rgba(0, 0, 0, 0.15);
         }
         
         * {
@@ -81,25 +85,43 @@
             color: var(--gray-dark);
             font-weight: 500;
             transition: var(--transition);
+            position: relative;
         }
         
         nav a:hover {
             color: var(--primary);
         }
         
+        nav a::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: -5px;
+            left: 0;
+            background-color: var(--primary);
+            transition: var(--transition);
+        }
+        
+        nav a:hover::after {
+            width: 100%;
+        }
+        
         .contact-btn {
             background-color: var(--primary);
             color: white;
-            padding: 8px 15px;
-            border-radius: var(--rounded);
+            padding: 10px 20px;
+            border-radius: 30px;
             text-decoration: none;
             font-weight: 500;
             transition: var(--transition);
+            box-shadow: var(--3d-effect);
         }
         
         .contact-btn:hover {
             background-color: var(--primary-dark);
             transform: translateY(-2px);
+            box-shadow: var(--3d-effect-hover);
         }
         
         .mobile-menu-btn {
@@ -113,12 +135,14 @@
         
         /* Hero Section */
         .hero {
-            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
             color: var(--white);
-            padding: 80px 0;
+            padding: 100px 0;
             text-align: center;
             position: relative;
             overflow: hidden;
+            clip-path: polygon(0 0, 100% 0, 100% 90%, 0 100%);
+            margin-bottom: 60px;
         }
         
         .hero::before {
@@ -128,7 +152,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiPjxkZWZzPjxwYXR0ZXJuIGlkPSJwYXR0ZXJuIiB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHBhdHRlcm5Vbml0cz0idXNlclNwYWNlT25Vc2UiIHBhdHRlcm5UcmFuc2Zvcm09InJvdGF0ZSg0NSkiPjxyZWN0IHdpZHRoPSIyMCIgaGVpZ2h0PSIyMCIgZmlsbD0icmdiYSgyNTUsMjU1LDI1NSwwLjAzKSIvPjwvcGF0dGVybj48L2RlZnM+PHJlY3Qgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgZmlsbD0idXJsKCNwYXR0ZXJuKSIvPjwvc3ZnPg==');
+            background: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiPjxkZWZzPjxwYXR0ZXJuIGlkPSJwYXR0ZXJuIiB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHBhdHRlcm5Vbml0cz0idXNlclNwYWNlT25Vc2UiIHBhdHRlcm5UcmFuc2Zvcm09InJvdGF0ZSg0NSkiPjxyZWN0IHdpZHRoPSIyMCIgaGVpZ2h0PSIyMCIgZmlsbD0icmdiYSgyNTUsMjU1LDI1NSwwLjA1KSIvPjwvcGF0dGVybj48L2RlZnM+PHJlY3Qgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgZmlsbD0idXJsKCNwYXR0ZXJuKSIvPjwvc3ZnPg==');
             opacity: 0.5;
         }
         
@@ -141,13 +165,14 @@
         }
         
         .hero h2 {
-            font-size: 2.5rem;
+            font-size: 3rem;
             margin-bottom: 20px;
             font-weight: 700;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
         }
         
         .hero p {
-            font-size: 1.2rem;
+            font-size: 1.3rem;
             margin-bottom: 30px;
             opacity: 0.9;
         }
@@ -155,19 +180,36 @@
         .cta-btn {
             background-color: var(--white);
             color: var(--primary);
-            padding: 12px 30px;
+            padding: 15px 35px;
             border-radius: 30px;
             text-decoration: none;
             font-weight: 600;
             font-size: 1.1rem;
             display: inline-block;
             transition: var(--transition);
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            box-shadow: var(--3d-effect);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .cta-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: 0.5s;
         }
         
         .cta-btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+            transform: translateY(-5px);
+            box-shadow: var(--3d-effect-hover);
+        }
+        
+        .cta-btn:hover::before {
+            left: 100%;
         }
         
         .tool-icons {
@@ -180,39 +222,46 @@
         
         .tool-icon {
             background-color: rgba(255, 255, 255, 0.1);
-            width: 60px;
-            height: 60px;
-            border-radius: 15px;
+            width: 70px;
+            height: 70px;
+            border-radius: 20px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 24px;
+            font-size: 28px;
             transition: var(--transition);
             backdrop-filter: blur(5px);
             border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            transform-style: preserve-3d;
+            transform: perspective(500px) rotateY(0deg);
         }
         
         .tool-icon:hover {
-            transform: translateY(-5px) scale(1.1);
+            transform: perspective(500px) rotateY(15deg) translateY(-5px) scale(1.1);
             background-color: rgba(255, 255, 255, 0.2);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
         }
         
         /* Search Section */
         .search-section {
             background-color: var(--white);
-            padding: 30px 0;
-            margin-top: -40px;
+            padding: 30px;
+            margin-top: -60px;
             border-radius: var(--rounded);
-            box-shadow: var(--shadow);
+            box-shadow: var(--3d-effect);
             position: relative;
             z-index: 2;
             max-width: 900px;
             margin-left: auto;
             margin-right: auto;
+            border: 1px solid rgba(233, 30, 99, 0.1);
+            transform-style: preserve-3d;
+            transform: perspective(1000px) rotateX(1deg);
         }
         
         .search-container {
-            padding: 0 20px;
+            padding: 0 10px;
         }
         
         .search-bar {
@@ -223,47 +272,56 @@
         
         .search-bar input {
             flex: 1;
-            padding: 15px 20px;
-            border: 1px solid #ddd;
+            padding: 15px 25px;
+            border: 2px solid var(--primary-light);
             border-radius: var(--rounded) 0 0 var(--rounded);
             font-size: 1rem;
             outline: none;
+            transition: var(--transition);
+            background-color: var(--gray-light);
         }
         
         .search-bar input:focus {
             border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(233, 30, 99, 0.2);
         }
         
         .search-bar button {
-            background-color: var(--primary);
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
             color: white;
             border: none;
-            padding: 0 25px;
+            padding: 0 30px;
             border-radius: 0 var(--rounded) var(--rounded) 0;
             cursor: pointer;
-            font-weight: 500;
+            font-weight: 600;
             transition: var(--transition);
+            box-shadow: var(--3d-effect);
         }
         
         .search-bar button:hover {
-            background-color: var(--primary-dark);
+            background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 100%);
+            transform: translateY(-2px);
+            box-shadow: var(--3d-effect-hover);
         }
         
         .search-results {
             display: none;
             background-color: var(--white);
             border-radius: var(--rounded);
-            box-shadow: var(--shadow);
+            box-shadow: var(--3d-effect);
             padding: 20px;
             margin-top: 20px;
             max-width: 900px;
             margin-left: auto;
             margin-right: auto;
+            border: 1px solid rgba(233, 30, 99, 0.1);
+            transform: perspective(1000px) rotateX(1deg);
         }
 
         .search-results h3 {
             margin-bottom: 15px;
             color: var(--primary);
+            font-size: 1.3rem;
         }
 
         .search-results ul {
@@ -271,8 +329,14 @@
         }
 
         .search-results ul li {
-            padding: 10px 0;
-            border-bottom: 1px solid #e2e8f0;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--primary-light);
+            transition: var(--transition);
+        }
+
+        .search-results ul li:hover {
+            background-color: var(--gray-light);
+            padding-left: 10px;
         }
 
         .search-results ul li:last-child {
@@ -280,9 +344,11 @@
         }
 
         .search-results ul li a {
-            color: var(--text-dark);
+            color: var(--gray-dark);
             text-decoration: none;
             transition: var(--transition);
+            display: block;
+            font-weight: 500;
         }
 
         .search-results ul li a:hover {
@@ -291,105 +357,185 @@
         
         /* Tools Sections */
         .tools-section {
-            padding: 60px 0;
+            padding: 80px 0;
+            position: relative;
+        }
+        
+        .tools-section:nth-child(even) {
+            background-color: var(--white);
+        }
+        
+        .tools-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiPjxkZWZzPjxwYXR0ZXJuIGlkPSJwYXR0ZXJuIiB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHBhdHRlcm5Vbml0cz0idXNlclNwYWNlT25Vc2UiIHBhdHRlcm5UcmFuc2Zvcm09InJvdGF0ZSg0NSkiPjxyZWN0IHdpZHRoPSIyMCIgaGVpZ2h0PSIyMCIgZmlsbD0icmdiYSgyMzMsMzAsOTksMC4wMykiLz48L3BhdHRlcm4+PC9kZWZzPjxyZWN0IHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbGw9InVybCgjcGF0dGVybikiLz48L3N2Zz4=');
+            opacity: 0.05;
+            pointer-events: none;
         }
         
         .section-header {
             text-align: center;
-            margin-bottom: 40px;
+            margin-bottom: 50px;
+            position: relative;
         }
         
         .section-header h3 {
-            font-size: 1.8rem;
+            font-size: 2.2rem;
             color: var(--primary-dark);
-            margin-bottom: 10px;
+            margin-bottom: 15px;
+            position: relative;
+            display: inline-block;
+        }
+        
+        .section-header h3::after {
+            content: '';
+            position: absolute;
+            width: 60%;
+            height: 3px;
+            bottom: -10px;
+            left: 20%;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            border-radius: 3px;
         }
         
         .section-header p {
             color: var(--gray-dark);
             max-width: 700px;
             margin: 0 auto;
+            font-size: 1.1rem;
         }
         
         .tools-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 25px;
-            margin-top: 30px;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
+            position: relative;
         }
         
         .tool-card {
             background-color: var(--white);
             border-radius: var(--rounded);
             overflow: hidden;
-            box-shadow: var(--shadow);
+            box-shadow: var(--3d-effect);
             transition: var(--transition);
             display: flex;
             flex-direction: column;
             height: 100%;
+            position: relative;
+            border: 1px solid rgba(233, 30, 99, 0.1);
+            transform-style: preserve-3d;
+            transform: perspective(1000px) rotateY(0deg);
         }
         
         .tool-card:hover {
-            transform: translateY(-5px);
-            box-shadow: var(--shadow-hover);
+            transform: perspective(1000px) rotateY(5deg) translateY(-10px);
+            box-shadow: var(--3d-effect-hover);
+        }
+        
+        .tool-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(233, 30, 99, 0.1) 0%, rgba(255, 64, 129, 0.05) 100%);
+            opacity: 0;
+            transition: var(--transition);
+        }
+        
+        .tool-card:hover::before {
+            opacity: 1;
         }
         
         .tool-icon-container {
-            background-color: var(--primary-light);
-            color: var(--primary-dark);
-            padding: 20px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: var(--white);
+            padding: 25px;
             text-align: center;
-            font-size: 2rem;
+            font-size: 2.2rem;
+            transition: var(--transition);
+        }
+        
+        .tool-card:hover .tool-icon-container {
+            background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 100%);
         }
         
         .tool-content {
-            padding: 20px;
+            padding: 25px;
             flex: 1;
             display: flex;
             flex-direction: column;
         }
         
         .tool-content h4 {
-            font-size: 1.2rem;
-            margin-bottom: 10px;
+            font-size: 1.3rem;
+            margin-bottom: 15px;
             color: var(--primary-dark);
         }
         
         .tool-content p {
             color: var(--gray-dark);
-            margin-bottom: 20px;
+            margin-bottom: 25px;
             flex: 1;
         }
         
         .tool-btn {
-            background-color: var(--primary);
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
             color: white;
             border: none;
-            padding: 10px;
+            padding: 12px;
             border-radius: var(--rounded);
             cursor: pointer;
-            font-weight: 500;
+            font-weight: 600;
             text-align: center;
             text-decoration: none;
             transition: var(--transition);
+            box-shadow: var(--3d-effect);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .tool-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: 0.5s;
         }
         
         .tool-btn:hover {
-            background-color: var(--primary-dark);
+            background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 100%);
+            transform: translateY(-3px);
+            box-shadow: var(--3d-effect-hover);
+        }
+        
+        .tool-btn:hover::before {
+            left: 100%;
         }
         
         /* Footer */
         footer {
-            background-color: #1a1a1a;
+            background: linear-gradient(135deg, var(--gray-dark) 0%, #4a148c 100%);
             color: white;
-            padding: 60px 0 20px;
+            padding: 80px 0 30px;
+            clip-path: polygon(0 10%, 100% 0, 100% 100%, 0 100%);
+            margin-top: 60px;
         }
         
         .footer-container {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
             gap: 40px;
-            margin-bottom: 40px;
+            margin-bottom: 50px;
         }
         
         .footer-logo {
@@ -410,24 +556,38 @@
         .footer-about p {
             opacity: 0.8;
             margin-bottom: 20px;
+            line-height: 1.7;
         }
         
         .footer-contact p {
             opacity: 0.8;
-            margin-bottom: 10px;
+            margin-bottom: 15px;
             display: flex;
             align-items: center;
-            gap: 5px;
+            gap: 10px;
         }
         
         .footer-contact i {
             color: var(--primary-light);
+            font-size: 1.1rem;
         }
         
         .footer-links h3 {
-            font-size: 1.2rem;
-            margin-bottom: 20px;
+            font-size: 1.3rem;
+            margin-bottom: 25px;
             color: white;
+            position: relative;
+            display: inline-block;
+        }
+        
+        .footer-links h3::after {
+            content: '';
+            position: absolute;
+            width: 50%;
+            height: 2px;
+            bottom: -8px;
+            left: 0;
+            background-color: var(--primary-light);
         }
         
         .footer-links ul {
@@ -435,23 +595,35 @@
         }
         
         .footer-links li {
-            margin-bottom: 10px;
+            margin-bottom: 12px;
+            transition: var(--transition);
+        }
+        
+        .footer-links li:hover {
+            transform: translateX(5px);
         }
         
         .footer-links a {
             color: #ccc;
             text-decoration: none;
             transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
         
         .footer-links a:hover {
             color: var(--primary-light);
         }
         
+        .footer-links a i {
+            font-size: 0.8rem;
+        }
+        
         .footer-bottom {
             text-align: center;
-            padding-top: 20px;
-            border-top: 1px solid #333;
+            padding-top: 30px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
         }
         
         .footer-bottom p {
@@ -459,14 +631,58 @@
             font-size: 0.9rem;
         }
         
+        /* Floating elements for 3D effect */
+        .floating {
+            animation: floating 6s ease-in-out infinite;
+        }
+        
+        .floating-2 {
+            animation: floating 5s ease-in-out infinite;
+            animation-delay: 1s;
+        }
+        
+        .floating-3 {
+            animation: floating 7s ease-in-out infinite;
+            animation-delay: 2s;
+        }
+        
+        @keyframes floating {
+            0% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-15px) rotate(2deg); }
+            100% { transform: translateY(0px) rotate(0deg); }
+        }
+        
         /* Responsive Styles */
-        @media (max-width: 992px) {
+        @media (max-width: 1200px) {
             .hero h2 {
+                font-size: 2.5rem;
+            }
+            
+            .section-header h3 {
                 font-size: 2rem;
+            }
+        }
+        
+        @media (max-width: 992px) {
+            .hero {
+                padding: 80px 0;
+                clip-path: polygon(0 0, 100% 0, 100% 95%, 0 100%);
+            }
+            
+            .hero h2 {
+                font-size: 2.2rem;
             }
             
             .hero p {
-                font-size: 1rem;
+                font-size: 1.1rem;
+            }
+            
+            .search-section {
+                margin-top: -40px;
+            }
+            
+            .tools-grid {
+                grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
             }
         }
         
@@ -478,6 +694,23 @@
             
             nav {
                 display: none;
+                position: fixed;
+                top: 70px;
+                left: 0;
+                width: 100%;
+                background-color: var(--white);
+                padding: 20px;
+                box-shadow: var(--shadow);
+                z-index: 99;
+            }
+            
+            nav.active {
+                display: block;
+            }
+            
+            nav ul {
+                flex-direction: column;
+                gap: 15px;
             }
             
             .mobile-menu-btn {
@@ -486,14 +719,15 @@
             
             .hero {
                 padding: 60px 0;
+                clip-path: polygon(0 0, 100% 0, 100% 97%, 0 100%);
             }
             
             .hero h2 {
                 font-size: 1.8rem;
             }
             
-            .tools-grid {
-                grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            .cta-btn {
+                padding: 12px 30px;
             }
             
             .search-bar {
@@ -507,25 +741,48 @@
             
             .search-bar button {
                 border-radius: var(--rounded);
-                padding: 12px;
+                padding: 15px;
+            }
+            
+            .section-header h3 {
+                font-size: 1.8rem;
+            }
+            
+            .tool-icon {
+                width: 60px;
+                height: 60px;
+                font-size: 24px;
             }
         }
         
         @media (max-width: 576px) {
-            .hero h2 {
-                font-size: 1.5rem;
+            .hero {
+                padding: 50px 0;
             }
             
-            .cta-btn {
-                padding: 10px 25px;
+            .hero h2 {
+                font-size: 1.6rem;
+            }
+            
+            .hero p {
+                font-size: 1rem;
             }
             
             .section-header h3 {
                 font-size: 1.5rem;
             }
             
+            .tools-grid {
+                grid-template-columns: 1fr;
+            }
+            
             .footer-container {
                 grid-template-columns: 1fr;
+                gap: 30px;
+            }
+            
+            .footer-links {
+                margin-top: 20px;
             }
         }
     </style>
@@ -536,7 +793,7 @@
         <div class="container header-container">
             <a href="#" class="logo">OneClick<span>Tools</span></a>
             
-            <nav>
+            <nav id="mainNav">
                 <ul>
                     <li><a href="#home">Home</a></li>
                     <li><a href="#tools">Tools</a></li>
@@ -544,7 +801,7 @@
                 </ul>
             </nav>
             <a href="mailto:toolsoneclick@gmail.com" class="contact-btn">Contact Us</a>
-            <button class="mobile-menu-btn">
+            <button class="mobile-menu-btn" id="mobileMenuBtn">
                 <i class="fas fa-bars"></i>
             </button>
         </div>
@@ -554,15 +811,16 @@
     <section class="hero" id="home">
         <div class="hero-content">
             <h2>Your Daily Tools, All in One Place</h2>
-            <a href="#tools" class="cta-btn">Explore Tools</a>
+            <p>Powerful, easy-to-use tools to simplify your digital life</p>
+            <a href="#tools" class="cta-btn floating">Explore Tools</a>
             
             <div class="tool-icons">
-                <div class="tool-icon"><i class="fas fa-image"></i></div>
-                <div class="tool-icon"><i class="fas fa-file-alt"></i></div>
-                <div class="tool-icon"><i class="fas fa-calculator"></i></div>
-                <div class="tool-icon"><i class="fas fa-font"></i></div>
-                <div class="tool-icon"><i class="fas fa-code"></i></div>
-                <div class="tool-icon"><i class="fas fa-palette"></i></div>
+                <div class="tool-icon floating"><i class="fas fa-image"></i></div>
+                <div class="tool-icon floating-2"><i class="fas fa-file-alt"></i></div>
+                <div class="tool-icon floating-3"><i class="fas fa-calculator"></i></div>
+                <div class="tool-icon floating"><i class="fas fa-font"></i></div>
+                <div class="tool-icon floating-2"><i class="fas fa-code"></i></div>
+                <div class="tool-icon floating-3"><i class="fas fa-palette"></i></div>
             </div>
         </div>
     </section>
@@ -572,7 +830,7 @@
         <div class="search-container">
             <div class="search-bar">
                 <input type="text" placeholder="Search a tool..." id="searchInput">
-                <button type="submit" id="searchButton"><i class="fas fa-search"></i></button>
+                <button type="submit" id="searchButton"><i class="fas fa-search"></i> Search</button>
             </div>
             <div class="search-results" id="searchResults">
                 <h3>Search Results</h3>
@@ -590,6 +848,7 @@
             <div class="container">
                 <div class="section-header">
                     <h3>🖼 Image Tools</h3>
+                    <p>Transform and optimize your images with our powerful tools</p>
                 </div>
                 <div class="tools-grid">
                     <div class="tool-card">
@@ -598,7 +857,7 @@
                         </div>
                         <div class="tool-content">
                             <h4>Image Converter</h4>
-                            <p>Convert between JPG, PNG, GIF, WEBP and other formats</p>
+                            <p>Convert between JPG, PNG, GIF, WEBP and other formats with just one click</p>
                             <a href="image-converter.html" class="tool-btn">Use Tool</a>
                         </div>
                     </div>
@@ -608,7 +867,7 @@
                         </div>
                         <div class="tool-content">
                             <h4>Image Compressor</h4>
-                            <p>Reduce image file size without losing quality</p>
+                            <p>Reduce image file size without losing quality for faster websites</p>
                             <a href="index-compressor" class="tool-btn">Use Tool</a>
                         </div>
                     </div>
@@ -618,7 +877,7 @@
                         </div>
                         <div class="tool-content">
                             <h4>Image Resizer</h4>
-                            <p>Resize images to any dimension while maintaining aspect ratio</p>
+                            <p>Resize images to any dimension while maintaining aspect ratio perfectly</p>
                             <a href="index-resizer.html" class="tool-btn">Use Tool</a>
                         </div>
                     </div>
@@ -638,7 +897,7 @@
                         </div>
                         <div class="tool-content">
                             <h4>Image to Text (OCR)</h4>
-                            <p>Extract text from images with optical character recognition</p>
+                            <p>Extract text from images with optical character recognition technology</p>
                             <a href="index-(ocr).html" class="tool-btn">Use Tool</a>
                         </div>
                     </div>
@@ -648,7 +907,7 @@
                         </div>
                         <div class="tool-content">
                             <h4>Image Rotator/Flipper</h4>
-                            <p>Rotate or flip images horizontally or vertically</p>
+                            <p>Rotate or flip images horizontally or vertically with precision</p>
                             <a href="index-rotator-flipper.html" class="tool-btn">Use Tool</a>
                         </div>
                     </div>
@@ -657,9 +916,10 @@
         </section>
 
         <!-- Document Tools Section -->
-        <section class="tools-section" style="background-color: #f1f5f9;">
+        <section class="tools-section">
             <div class="section-header">
                 <h3>📄 Document Tools</h3>
+                <p>Handle all your document needs with our comprehensive tools</p>
             </div>
             <div class="tools-grid">
                 <!-- PDF to Word / Word to PDF -->
@@ -669,7 +929,7 @@
                     </div>
                     <div class="tool-content">
                         <h4>PDF to Word / Word to PDF</h4>
-                        <p>Convert between PDF and Word documents seamlessly</p>
+                        <p>Convert between PDF and Word documents seamlessly while preserving formatting</p>
                         <a href="index-word.html" class="tool-btn">Use Tool</a>
                     </div>
                 </div>
@@ -681,7 +941,7 @@
                     </div>
                     <div class="tool-content">
                         <h4>PDF Compressor</h4>
-                        <p>Reduce PDF file size while maintaining quality</p>
+                        <p>Reduce PDF file size while maintaining quality for easier sharing</p>
                         <a href="index-pdf-compressor.html" class="tool-btn">Use Tool</a>
                     </div>
                 </div>
@@ -693,7 +953,7 @@
                     </div>
                     <div class="tool-content">
                         <h4>PDF Merger & Splitter</h4>
-                        <p>Combine multiple PDFs or split a PDF into multiple files</p>
+                        <p>Combine multiple PDFs or split a PDF into multiple files effortlessly</p>
                         <a href="index-fdt-merger.html" class="tool-btn">Use Tool</a>
                     </div>
                 </div>
@@ -705,7 +965,7 @@
                     </div>
                     <div class="tool-content">
                         <h4>Document Converter</h4>
-                        <p>Convert between various document formats</p>
+                        <p>Convert between various document formats including DOCX, PPTX, and more</p>
                         <a href="index-p-f-d-c.html" class="tool-btn">Use Tool</a>
                     </div>
                 </div>
@@ -717,7 +977,7 @@
                     </div>
                     <div class="tool-content">
                         <h4>PDF Lock/Unlock</h4>
-                        <p>Add or remove password protection from PDF files</p>
+                        <p>Add or remove password protection from PDF files securely</p>
                         <a href="index-lock-unlock.html" class="tool-btn">Use Tool</a>
                     </div>
                 </div>
@@ -729,7 +989,7 @@
                     </div>
                     <div class="tool-content">
                         <h4>eSign PDF</h4>
-                        <p>Add digital signatures to your PDF documents</p>
+                        <p>Add digital signatures to your PDF documents for official purposes</p>
                         <a href="indet-E-sing.html" class="tool-btn">Use Tool</a>
                     </div>
                 </div>
@@ -740,6 +1000,7 @@
         <section class="tools-section">
             <div class="section-header">
                 <h3>🧮 Calculator Tools</h3>
+                <p>Perform calculations for various needs with our specialized tools</p>
             </div>
             <div class="tools-grid">
                 <!-- Scientific Calculator -->
@@ -749,7 +1010,7 @@
                     </div>
                     <div class="tool-content">
                         <h4>Scientific Calculator</h4>
-                        <p>Advanced calculator with scientific functions</p>
+                        <p>Advanced calculator with scientific functions for complex calculations</p>
                         <a href="index-p-f-s-c.html" class="tool-btn">Use Tool</a>
                     </div>
                 </div>
@@ -761,7 +1022,7 @@
                     </div>
                     <div class="tool-content">
                         <h4>Age Calculator</h4>
-                        <p>Calculate age from birth date to current date</p>
+                        <p>Calculate age from birth date to current date with precision</p>
                         <a href="index-age-calculator.html" class="tool-btn">Use Tool</a>
                     </div>
                 </div>
@@ -773,7 +1034,7 @@
                     </div>
                     <div class="tool-content">
                         <h4>BMI Calculator</h4>
-                        <p>Calculate your Body Mass Index</p>
+                        <p>Calculate your Body Mass Index and understand your health status</p>
                         <a href="index-bmi-cr.html" class="tool-btn">Use Tool</a>
                     </div>
                 </div>
@@ -785,7 +1046,7 @@
                     </div>
                     <div class="tool-content">
                         <h4>Loan EMI Calculator</h4>
-                        <p>Calculate Equated Monthly Installments for loans</p>
+                        <p>Calculate Equated Monthly Installments for loans with detailed breakdown</p>
                         <a href="index-emi-cr.html" class="tool-btn">Use Tool</a>
                     </div>
                 </div>
@@ -797,7 +1058,7 @@
                     </div>
                     <div class="tool-content">
                         <h4>GST Calculator</h4>
-                        <p>Calculate Goods and Services Tax amounts</p>
+                        <p>Calculate Goods and Services Tax amounts for your invoices</p>
                         <a href="index-gst-cr.html" class="tool-btn">Use Tool</a>
                     </div>
                 </div>
@@ -809,7 +1070,7 @@
                     </div>
                     <div class="tool-content">
                         <h4>Currency Converter</h4>
-                        <p>Convert between world currencies with live rates</p>
+                        <p>Convert between world currencies with live exchange rates</p>
                         <a href="index-currenci-cr.html" class="tool-btn">Use Tool</a>
                     </div>
                 </div>
@@ -817,9 +1078,10 @@
         </section>
 
         <!-- Text Tools Section -->
-        <section class="tools-section" style="background-color: #f1f5f9;">
+        <section class="tools-section">
             <div class="section-header">
                 <h3>🔤 Text Tools</h3>
+                <p>Manipulate and analyze text with our powerful text processing tools</p>
             </div>
             <div class="tools-grid">
                 <!-- Text Case Converter -->
@@ -829,7 +1091,7 @@
                     </div>
                     <div class="tool-content">
                         <h4>Text Case Converter</h4>
-                        <p>Convert text between uppercase, lowercase, title case and more</p>
+                        <p>Convert text between uppercase, lowercase, title case and more formats</p>
                         <a href="index-text-ce-cr.html" class="tool-btn">Use Tool</a>
                     </div>
                 </div>
@@ -841,7 +1103,7 @@
                     </div>
                     <div class="tool-content">
                         <h4>Word & Character Counter</h4>
-                        <p>Count words, characters, sentences and paragraphs</p>
+                        <p>Count words, characters, sentences and paragraphs with detailed analysis</p>
                         <a href="index-w-c-cr-cr.html" class="tool-btn">Use Tool</a>
                     </div>
                 </div>
@@ -853,7 +1115,7 @@
                     </div>
                     <div class="tool-content">
                         <h4>Remove Duplicate Lines</h4>
-                        <p>Remove duplicate lines from text while preserving order</p>
+                        <p>Remove duplicate lines from text while preserving order and formatting</p>
                         <a href="index-Re-de-ls.html" class="tool-btn">Use Tool</a>
                     </div>
                 </div>
@@ -865,7 +1127,7 @@
                     </div>
                     <div class="tool-content">
                         <h4>Text Sorter</h4>
-                        <p>Sort lines of text alphabetically or numerically</p>
+                        <p>Sort lines of text alphabetically or numerically in ascending or descending order</p>
                         <a href="index-text-sr.html" class="tool-btn">Use Tool</a>
                     </div>
                 </div>
@@ -877,7 +1139,7 @@
                     </div>
                     <div class="tool-content">
                         <h4>Text Reverser</h4>
-                        <p>Reverse text, words, or character order</p>
+                        <p>Reverse text, words, or character order for various creative purposes</p>
                         <a href="index-text-re.html" class="tool-btn">Use Tool</a>
                     </div>
                 </div>
@@ -889,7 +1151,7 @@
                     </div>
                     <div class="tool-content">
                         <h4>Text Encryptor/Decryptor</h4>
-                        <p>Encrypt and decrypt text with secure algorithms</p>
+                        <p>Encrypt and decrypt text with secure algorithms to protect your information</p>
                         <a href="index-er.html" class="tool-btn">Use Tool</a>
                     </div>
                 </div>
@@ -900,6 +1162,7 @@
         <section class="tools-section">
             <div class="section-header">
                 <h3>🌐 Web/Developer Tools</h3>
+                <p>Essential tools for web developers and programmers</p>
             </div>
             <div class="tools-grid">
                 <!-- HTML/CSS/JS Minifier -->
@@ -909,7 +1172,7 @@
                     </div>
                     <div class="tool-content">
                         <h4>HTML/CSS/JS Minifier</h4>
-                        <p>Minify and optimize your web code</p>
+                        <p>Minify and optimize your web code for better performance</p>
                         <a href="index-mr.html" class="tool-btn">Use Tool</a>
                     </div>
                 </div>
@@ -921,7 +1184,7 @@
                     </div>
                     <div class="tool-content">
                         <h4>JSON Formatter & Validator</h4>
-                        <p>Format and validate JSON data</p>
+                        <p>Format and validate JSON data with syntax highlighting</p>
                         <a href="index-jn-fr & vr.html" class="tool-btn">Use Tool</a>
                     </div>
                 </div>
@@ -933,7 +1196,7 @@
                     </div>
                     <div class="tool-content">
                         <h4>Base64 Encoder/Decoder</h4>
-                        <p>Encode and decode Base64 strings</p>
+                        <p>Encode and decode Base64 strings for data transmission</p>
                         <a href="indec-base64.html" class="tool-btn">Use Tool</a>
                     </div>
                 </div>
@@ -945,7 +1208,7 @@
                     </div>
                     <div class="tool-content">
                         <h4>URL Encoder/Decoder</h4>
-                        <p>Encode and decode URL strings</p>
+                        <p>Encode and decode URL strings to handle special characters</p>
                         <a href="index-url-er-dr.html" class="tool-btn">Use Tool</a>
                     </div>
                 </div>
@@ -957,7 +1220,7 @@
                     </div>
                     <div class="tool-content">
                         <h4>Color Picker & Converter</h4>
-                        <p>Pick colors and convert between formats</p>
+                        <p>Pick colors and convert between HEX, RGB, HSL formats</p>
                         <a href="index-cr-pr&cr.html" class="tool-btn">Use Tool</a>
                     </div>
                 </div>
@@ -969,7 +1232,7 @@
                     </div>
                     <div class="tool-content">
                         <h4>Regex Tester</h4>
-                        <p>Test and debug regular expressions</p>
+                        <p>Test and debug regular expressions with real-time matching</p>
                         <a href="index-rx-tr.html" class="tool-btn">Use Tool</a>
                     </div>
                 </div>
@@ -977,9 +1240,10 @@
         </section>
 
         <!-- Color Tools Section -->
-        <section class="tools-section" style="background-color: #f1f5f9;">
+        <section class="tools-section">
             <div class="section-header">
                 <h3>🎨 Color Tools</h3>
+                <p>Create, convert and analyze colors for your designs</p>
             </div>
             <div class="tools-grid">
                 <!-- Color Picker from Image -->
@@ -989,7 +1253,7 @@
                     </div>
                     <div class="tool-content">
                         <h4>Color Picker from Image</h4>
-                        <p>Extract colors from any uploaded image</p>
+                        <p>Extract colors from any uploaded image to create palettes</p>
                         <a href="index-coler-pr-fm-ie.html" class="tool-btn">Use Tool</a>
                     </div>
                 </div>
@@ -1001,7 +1265,7 @@
                     </div>
                     <div class="tool-content">
                         <h4>HEX to RGB Converter</h4>
-                        <p>Convert between HEX and RGB color formats</p>
+                        <p>Convert between HEX and RGB color formats with precision</p>
                         <a href="index-hx-rb.html" class="tool-btn">Use Tool</a>
                     </div>
                 </div>
@@ -1013,7 +1277,7 @@
                     </div>
                     <div class="tool-content">
                         <h4>Gradient Generator</h4>
-                        <p>Create beautiful CSS gradients</p>
+                        <p>Create beautiful CSS gradients with custom stops and angles</p>
                         <a href="index-gt-cr.html" class="tool-btn">Use Tool</a>
                     </div>
                 </div>
@@ -1025,7 +1289,7 @@
                     </div>
                     <div class="tool-content">
                         <h4>Contrast Checker</h4>
-                        <p>Check color contrast for accessibility standards</p>
+                        <p>Check color contrast for accessibility standards compliance</p>
                         <a href="index-contrast.html" class="tool-btn">Use Tool</a>
                     </div>
                 </div>
@@ -1037,7 +1301,7 @@
                     </div>
                     <div class="tool-content">
                         <h4>Palette Generator</h4>
-                        <p>Generate harmonious color palettes</p>
+                        <p>Generate harmonious color palettes for your projects</p>
                         <a href="index-pe-gr.html" class="tool-btn">Use Tool</a>
                     </div>
                 </div>
@@ -1060,6 +1324,7 @@
         <section class="tools-section">
             <div class="section-header">
                 <h3>🌍 SEO & Marketing Tools</h3>
+                <p>Optimize your content and analyze your marketing efforts</p>
             </div>
             <div class="tools-grid">
                 <!-- Keyword Density Checker -->
@@ -1069,7 +1334,7 @@
                     </div>
                     <div class="tool-content">
                         <h4>Keyword Density Checker</h4>
-                        <p>Analyze keyword density in your content</p>
+                        <p>Analyze keyword density in your content for SEO optimization</p>
                         <a href="index-kd-dy-cr.html" class="tool-btn">Use Tool</a>
                     </div>
                 </div>
@@ -1081,7 +1346,7 @@
                     </div>
                     <div class="tool-content">
                         <h4>Meta Tag Analyzer</h4>
-                        <p>Check and analyze meta tags of any webpage</p>
+                        <p>Check and analyze meta tags of any webpage for SEO</p>
                         <a href="index-meta-tag-ar.html" class="tool-btn">Use Tool</a>
                     </div>
                 </div>
@@ -1093,7 +1358,7 @@
                     </div>
                     <div class="tool-content">
                         <h4>Word Counter</h4>
-                        <p>Count words, characters, and reading time</p>
+                        <p>Count words, characters, and estimate reading time for content</p>
                         <a href="index-word-cr.html" class="tool-btn">Use Tool</a>
                     </div>
                 </div>
@@ -1101,9 +1366,10 @@
         </section>
 
         <!-- Utility Tools Section -->
-        <section class="tools-section" style="background-color: #f1f5f9;">
+        <section class="tools-section">
             <div class="section-header">
                 <h3>🛠️ Utility Tools</h3>
+                <p>Handy tools for various everyday tasks and needs</p>
             </div>
             <div class="tools-grid">
                 <!-- QR Code Generator & Scanner -->
@@ -1113,7 +1379,7 @@
                     </div>
                     <div class="tool-content">
                         <h4>QR Code Generator & Scanner</h4>
-                        <p>Create and scan QR codes for URLs, text, and more</p>
+                        <p>Create and scan QR codes for URLs, text, contact info and more</p>
                         <a href="index-qr-code-gr.html" class="tool-btn">Use Tool</a>
                     </div>
                 </div>
@@ -1125,7 +1391,7 @@
                     </div>
                     <div class="tool-content">
                         <h4>Barcode Generator</h4>
-                        <p>Generate barcodes in various formats</p>
+                        <p>Generate barcodes in various formats for products and inventory</p>
                         <a href="index-barcode-gr.html" class="tool-btn">Use Tool</a>
                     </div>
                 </div>
@@ -1137,7 +1403,7 @@
                     </div>
                     <div class="tool-content">
                         <h4>UUID Generator</h4>
-                        <p>Generate universally unique identifiers</p>
+                        <p>Generate universally unique identifiers for your applications</p>
                         <a href="index-uuid-gr.html" class="tool-btn">Use Tool</a>
                     </div>
                 </div>
@@ -1149,7 +1415,7 @@
                     </div>
                     <div class="tool-content">
                         <h4>Unit Converter</h4>
-                        <p>Convert between different units of measurement</p>
+                        <p>Convert between different units of measurement for various systems</p>
                         <a href="index-unit-cr.html" class="tool-btn">Use Tool</a>
                     </div>
                 </div>
@@ -1161,7 +1427,7 @@
                     </div>
                     <div class="tool-content">
                         <h4>Time Zone Converter</h4>
-                        <p>Convert times between different time zones</p>
+                        <p>Convert times between different time zones worldwide</p>
                         <a href="Index-time-zone-cr.html" class="tool-btn">Use Tool</a>
                     </div>
                 </div>
@@ -1173,7 +1439,7 @@
                     </div>
                     <div class="tool-content">
                         <h4>Random Number/Password Generator</h4>
-                        <p>Generate random numbers or secure passwords</p>
+                        <p>Generate random numbers or secure passwords with custom rules</p>
                         <a href="index-rm-pd-gr.html" class="tool-btn">Use Tool</a>
                     </div>
                 </div>
@@ -1184,6 +1450,7 @@
         <section class="tools-section">
             <div class="section-header">
                 <h3>🎥 Video & Audio Tools</h3>
+                <p>Edit and convert your multimedia files with ease</p>
             </div>
             <div class="tools-grid">
                 <!-- Video Converter -->
@@ -1193,7 +1460,7 @@
                     </div>
                     <div class="tool-content">
                         <h4>Video Converter</h4>
-                        <p>Convert videos between different formats</p>
+                        <p>Convert videos between different formats for various devices</p>
                         <a href="index-video-cr.html" class="tool-btn">Use Tool</a>
                     </div>
                 </div>
@@ -1205,7 +1472,7 @@
                     </div>
                     <div class="tool-content">
                         <h4>Video Compressor</h4>
-                        <p>Reduce video file size while maintaining quality</p>
+                        <p>Reduce video file size while maintaining quality for sharing</p>
                         <a href="index-vo-compressor.html" class="tool-btn">Use Tool</a>
                     </div>
                 </div>
@@ -1217,7 +1484,7 @@
                     </div>
                     <div class="tool-content">
                         <h4>Audio Converter</h4>
-                        <p>Convert audio files between different formats</p>
+                        <p>Convert audio files between different formats like MP3, WAV, etc.</p>
                         <a href="index-oideo-cvr.html" class="tool-btn">Use Tool</a>
                     </div>
                 </div>
@@ -1234,24 +1501,41 @@
                         <img src="favicon-16x16.png" alt="OneClick Tools Logo">
                           <span>OneClick Tools</span>
                     </a>
-                    <p>Simplifying your digital life with powerful, easy-to-use tools for all your needs.</p>
-                    <p><i class="fas fa-envelope"></i> toolsoneclick@gmail.com</p>
+                    <p>Simplifying your digital life with powerful, easy-to-use tools for all your needs. Our mission is to provide high-quality tools that save you time and effort.</p>
+                <div>
+                <div class="footer-contact">
+                        <p><i class="fas fa-envelope"></i> toolsoneclick@gmail.com</p>
+                        <p><i class="fas fa-phone-alt"></i> +1 (555) 123-4567</p>
+                        <p><i class="fas fa-map-marker-alt"></i> San Francisco, CA</p>
+                    </div>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                        <a href="#"><i class="fab fa-github"></i></a>
+                    </div>
                 </div>
                 
                 <div class="footer-links">
                     <h3>Quick Links</h3>
                     <ul>
-                        <li><a href="#home">Home</a></li>
-                        <li><a href="#tools">All Tools</a></li>
-                        <li><a href="#contact">Contact</a></li>
+                        <li><a href="#home"><i class="fas fa-chevron-right"></i> Home</a></li>
+                        <li><a href="#tools"><i class="fas fa-chevron-right"></i> All Tools</a></li>
+                        <li><a href="#contact"><i class="fas fa-chevron-right"></i> Contact</a></li>
+                        <li><a href="Privacy-Policy.html"><i class="fas fa-chevron-right"></i> Privacy Policy</a></li>
+                        <li><a href="tarms-and-cs.html"><i class="fas fa-chevron-right"></i> Terms of Use</a></li>
                     </ul>
                 </div>
                 
                 <div class="footer-links">
-                    <h3>Legal</h3>
+                    <h3>Popular Tools</h3>
                     <ul>
-                        <li><a href="Privacy-Policy.html">Privacy Policy</a></li>
-                        <li><a href="tarms-and-cs.html">Terms of Use</a></li>
+                        <li><a href="image-converter.html"><i class="fas fa-chevron-right"></i> Image Converter</a></li>
+                        <li><a href="index-compressor"><i class="fas fa-chevron-right"></i> Image Compressor</a></li>
+                        <li><a href="index-word.html"><i class="fas fa-chevron-right"></i> PDF to Word</a></li>
+                        <li><a href="index-p-f-s-c.html"><i class="fas fa-chevron-right"></i> Scientific Calculator</a></li>
+                        <li><a href="index-text-ce-cr.html"><i class="fas fa-chevron-right"></i> Text Case Converter</a></li>
                     </ul>
                 </div>
             </div>
@@ -1264,9 +1548,16 @@
 
     <script>
         // Mobile menu toggle functionality
-        document.querySelector('.mobile-menu-btn').addEventListener('click', function() {
-            const nav = document.querySelector('nav');
-            nav.style.display = nav.style.display === 'block' ? 'none' : 'block';
+        document.getElementById('mobileMenuBtn').addEventListener('click', function() {
+            const nav = document.getElementById('mainNav');
+            nav.classList.toggle('active');
+        });
+        
+        // Close mobile menu when clicking on a link
+        document.querySelectorAll('nav a').forEach(link => {
+            link.addEventListener('click', () => {
+                document.getElementById('mainNav').classList.remove('active');
+            });
         });
         
         // Search functionality
@@ -1305,15 +1596,15 @@
                     const listItem = document.createElement('li');
                     const link = document.createElement('a');
                     link.href = card.querySelector('.tool-btn').href;
-                    link.textContent = card.querySelector('h4').textContent;
+                    link.innerHTML = `<i class="fas fa-search"></i> ${card.querySelector('h4').textContent}`;
                     link.onclick = function(e) {
                         e.preventDefault();
                         // Scroll to the tool section
                         card.scrollIntoView({ behavior: 'smooth' });
                         // Highlight the card
-                        card.style.boxShadow = '0 0 0 3px var(--primary)';
+                        card.style.boxShadow = '0 0 0 3px var(--primary), var(--3d-effect-hover)';
                         setTimeout(() => {
-                            card.style.boxShadow = 'var(--shadow)';
+                            card.style.boxShadow = 'var(--3d-effect)';
                         }, 2000);
                         resultsContainer.style.display = 'none';
                     };
@@ -1348,6 +1639,18 @@
                     behavior: 'smooth'
                 });
             });
+        });
+        
+        // Add floating animation to random tool cards
+        const toolCards = document.querySelectorAll('.tool-card');
+        toolCards.forEach((card, index) => {
+            if (index % 3 === 0) {
+                card.classList.add('floating');
+            } else if (index % 3 === 1) {
+                card.classList.add('floating-2');
+            } else {
+                card.classList.add('floating-3');
+            }
         });
     </script>
 </body>
