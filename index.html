@@ -1546,18 +1546,32 @@
         </div>
     </footer>
 
-    <script>
-        // Mobile menu toggle functionality
-        document.getElementById('mobileMenuBtn').addEventListener('click', function() {
-            const nav = document.getElementById('mainNav');
-            nav.classList.toggle('active');
+<script>
+        // Initialize Vanta.js 3D background
+        VANTA.NET({
+            el: "#vanta-bg",
+            mouseControls: true,
+            touchControls: true,
+            gyroControls: false,
+            minHeight: 200.00,
+            minWidth: 200.00,
+            scale: 1.00,
+            scaleMobile: 1.00,
+            color: 0xff3e6c,
+            backgroundColor: 0xe83e6c,
+            points: 12.00,
+            maxDistance: 22.00,
+            spacing: 18.00
         });
-        
-        // Close mobile menu when clicking on a link
-        document.querySelectorAll('nav a').forEach(link => {
-            link.addEventListener('click', () => {
-                document.getElementById('mainNav').classList.remove('active');
-            });
+
+        // Mobile menu toggle functionality
+        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+        const mainNav = document.getElementById('mainNav');
+
+        mobileMenuBtn.addEventListener('click', function() {
+            mainNav.classList.toggle('active');
+            mobileMenuBtn.innerHTML = mainNav.classList.contains('active') ? 
+                '<i class="fas fa-times"></i>' : '<i class="fas fa-bars"></i>';
         });
         
         // Search functionality
@@ -1596,15 +1610,27 @@
                     const listItem = document.createElement('li');
                     const link = document.createElement('a');
                     link.href = card.querySelector('.tool-btn').href;
-                    link.innerHTML = `<i class="fas fa-search"></i> ${card.querySelector('h4').textContent}`;
+                    
+                    // Create icon element
+                    const icon = document.createElement('i');
+                    icon.className = card.querySelector('.tool-icon-container i').className;
+                    
+                    // Create text span
+                    const textSpan = document.createElement('span');
+                    textSpan.textContent = card.querySelector('h4').textContent;
+                    
+                    // Append icon and text to link
+                    link.appendChild(icon);
+                    link.appendChild(textSpan);
+                    
                     link.onclick = function(e) {
                         e.preventDefault();
                         // Scroll to the tool section
                         card.scrollIntoView({ behavior: 'smooth' });
                         // Highlight the card
-                        card.style.boxShadow = '0 0 0 3px var(--primary), var(--3d-effect-hover)';
+                        card.style.boxShadow = '0 0 0 3px var(--primary)';
                         setTimeout(() => {
-                            card.style.boxShadow = 'var(--3d-effect)';
+                            card.style.boxShadow = 'var(--shadow)';
                         }, 2000);
                         resultsContainer.style.display = 'none';
                     };
@@ -1617,7 +1643,9 @@
                 resultsContainer.style.display = 'block';
             } else {
                 const listItem = document.createElement('li');
-                listItem.textContent = 'No tools found matching your search.';
+                const noResults = document.createElement('div');
+                noResults.innerHTML = '<i class="fas fa-info-circle"></i> No tools found matching your search. Try our AI Assistant for help!';
+                listItem.appendChild(noResults);
                 resultsList.appendChild(listItem);
                 resultsContainer.style.display = 'block';
             }
@@ -1640,18 +1668,92 @@
                 });
             });
         });
+    
+        // AI Chat Assistant functionality
+        const aiAssistantBtn = document.getElementById('aiAssistantBtn');
+        const aiChatModal = document.getElementById('aiChatModal');
+        const closeChatBtn = document.getElementById('closeChatBtn');
+        const sendChatBtn = document.getElementById('sendChatBtn');
+        const aiChatInput = document.getElementById('aiChatInput');
+        const aiChatBody = document.getElementById('aiChatBody');
         
-        // Add floating animation to random tool cards
-        const toolCards = document.querySelectorAll('.tool-card');
-        toolCards.forEach((card, index) => {
-            if (index % 3 === 0) {
-                card.classList.add('floating');
-            } else if (index % 3 === 1) {
-                card.classList.add('floating-2');
-            } else {
-                card.classList.add('floating-3');
+        aiAssistantBtn.addEventListener('click', function() {
+            aiChatModal.classList.toggle('active');
+        });
+        
+        closeChatBtn.addEventListener('click', function() {
+            aiChatModal.classList.remove('active');
+        });
+        
+        sendChatBtn.addEventListener('click', sendMessage);
+        aiChatInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                sendMessage();
             }
         });
+        
+        function sendMessage() {
+            const message = aiChatInput.value.trim();
+            if (message === '') return;
+            
+            // Add user message
+            const userMessage = document.createElement('div');
+            userMessage.className = 'user-message';
+            userMessage.textContent = message;
+            aiChatBody.appendChild(userMessage);
+            
+            // Clear input
+            aiChatInput.value = '';
+            
+            // Scroll to bottom
+            aiChatBody.scrollTop = aiChatBody.scrollHeight;
+            
+            // Simulate AI response after delay
+            setTimeout(() => {
+                const aiMessage = document.createElement('div');
+                aiMessage.className = 'ai-message';
+                
+                // Simple response logic - in a real app, this would call an API
+                if (message.toLowerCase().includes('image')) {
+                    aiMessage.textContent = 'For image tools, I recommend our AI Image Enhancer or Smart Background Remover. Would you like me to direct you to these tools?';
+                } else if (message.toLowerCase().includes('document') || message.toLowerCase().includes('pdf')) {
+                    aiMessage.textContent = 'Our AI Document Tools can convert, compress, and analyze PDFs and other documents. The Smart PDF Optimizer might be what you need.';
+                } else if (message.toLowerCase().includes('color')) {
+                    aiMessage.textContent = 'The AI Palette Generator and Color Space Converter are popular choices for working with colors. They use neural networks to create perfect color schemes.';
+                } else {
+                    aiMessage.textContent = 'I can help you find the right tool for your needs. Could you tell me more about what you\'re trying to accomplish?';
+                }
+                
+                aiChatBody.appendChild(aiMessage);
+                aiChatBody.scrollTop = aiChatBody.scrollHeight;
+            }, 1000);
+        }
+        
+        // Animate tool cards on scroll
+        const animateOnScroll = () => {
+            const toolCards = document.querySelectorAll('.tool-card');
+            
+            toolCards.forEach((card, index) => {
+                const cardPosition = card.getBoundingClientRect().top;
+                const screenPosition = window.innerHeight / 1.3;
+                
+                if (cardPosition < screenPosition) {
+                    card.style.transitionDelay = `${index * 0.1}s`;
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0)';
+                }
+            });
+        };
+        
+        // Set initial state for animation
+        document.querySelectorAll('.tool-card').forEach(card => {
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(20px)';
+            card.style.transition = 'all 0.5s ease';
+        });
+        
+        window.addEventListener('scroll', animateOnScroll);
+        window.addEventListener('load', animateOnScroll);
     </script>
 </body>
 </html>
